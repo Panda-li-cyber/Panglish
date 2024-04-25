@@ -107,8 +107,12 @@
 'rugby ':' n. 橄榄球运动',
 'calligraphy':'n. 书法，书法艺术',
 
-            // 更多单词
+
+
+// 更多单词
         };
+
+        var synth = window.speechSynthesis;
 
         function createTable() {
             var table = document.getElementById('wordTable');
@@ -125,6 +129,7 @@
                 cell.onclick = (function(e, c) {
                     return function() {
                         toggleWord(this, e, c);
+                        speakWord(e);
                     };
                 })(english, chinese);
                 index++;
@@ -141,6 +146,11 @@
                 cell.style.backgroundColor = 'darkgreen';
                 cell.style.color = 'white';
             }
+        }
+
+        function speakWord(word) {
+            var utterThis = new SpeechSynthesisUtterance(word);
+            synth.speak(utterThis);
         }
 
         function generateRandom() {
