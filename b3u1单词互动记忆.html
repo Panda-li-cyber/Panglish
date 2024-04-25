@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆(B3U1)</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（B3U1）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+      'harm ':' n. & vt. 伤害，损害 (1)',
+'soil ':' n. 土壤；国土，领土，土地 (1)',
+'ecosystem ':' n. 生态系统 (2)',
+'overseas ':' adj. 海外的，国外的 adv.向（在）海外，向（在）国外 (2)',
+'region ':' n. 地区，区域；行政区 (2)',
+'continent ':' n. 大陆，陆地；洲 (2)',
+'million ':' n. 一百万；许多，大量 (2)',
+'length ':' n. 长，长度；时间的长短；篇幅，（电影）片长 (2)',
+'biodiversity ':' n. 生物多样性 (2)',
+'species ':' n. (pl species) 种，物种 (2)',
+'nut ':' n. 坚果 (3)',
+'brazil nut ':'巴西坚果(3)',
+'lily ':' n. 百合（花） (3)',
+'water lily ':'睡莲(3)',
+'variety ':' n. 不同种类；变化，多样性；变种，变体 (3)',
+'wildlife ':' n. 野生动植物，野生生物(3)',
+'beneath ':' prep. 在…下面，在…下方；配不上 (3)',
+'mass ':' n. 大量；团，块，堆；一大群 adj.大批的，广泛的 (3)',
+'towering ':' adj. 高大的，高耸的；出色的 (3)',
+'hardwood ':' n. 阔叶树；硬材（阔叶树的木材） (3)',
+'living ':' adj. 活着的，活的；在使用的 n.生计，谋生；生活方式 (3)',
+'mammal ':' n. 哺乳动物 (3)',
+'jaguar ':' n. 美洲豹，美洲虎 (3)',
+'survive ':' vi. 生存，存活 vt.幸存，幸免于难 (3)',
+'frog ':' n. 蛙，青蛙 (3)',
+'in turn ':'相应地，转而(3)',
+'insect ':' n. 昆虫 (3)',
+'microorganism ':' n. 微生物 (3)',
+'break down ':'使分解（为），使变化（成）(3)',
+'nutrient ':' n. 营养素，营养物 (3)',
+'breathe life into ':'给…带来起色，注入活力(3)',
+'carbon ':' n. 碳 (3)',
+'oxygen ':' n. 氧，氧气 (3)',
+'thus ':' adv. 因此，从而；这样 (3)',
+'disappear ':' vi. 不复存在，灭绝，消亡；消失；失踪 (3)',
+'due ':' to 由于，因为 (3)',
+'agriculture ':' n. 农业，农学 (3)',
+'cattle ':' n. 牛 (3)',
+'impact ':' n. 影响，作用；撞击，冲撞 ',
+'extinction ':' n. 灭绝，绝种 (3)',
+'damage ':' vt. & n. 损害，伤害，损坏，破坏',
+'climate ':' n. 气候；倾向，风气 (5)',
+'build up ':'逐渐增加，扩大(5)',
+'global ':' adj. 全球的；全面的 (6)',
+'greenhouse ':' n. 温室，暖房 (6)',
+'gas ':' n. 气体；煤气；汽油 (6)',
+'drought ':' n. 旱灾，久旱 (6)',
+'come up with ':'想出，想到(6)',
+'call for ':'（公开）要求；需要(6)',
+'application ':' n. 应用，运用；申请 (6)',
+'brochure ':' n. 小册子 (6)',
+'organization ':' n. 组织，团体；组织工作；安排；条理 (7)',
+'absolutely ':' adv. 绝对地，完全地；极其 (7)',
+'belt ':' n. 地带，地区；腰带；传送带 (7)',
+'medal ':' n. 奖章，勋章 (7)',
+'image ':' n. 形象；图像；意象 (8)',
+'shark ':' n. 鲨鱼 (8)',
+'spring to mind ':'突然记起（或想到）(8)',
+'whale ':' n. 鲸 (8)',
+'deer ':' n. (pl deer) 鹿 (8)',
+'track ':' vt. &vi. 跟踪，追踪 n.足迹，踪迹；小道；轨道；跑道；路线 (8)',
+'habitat ':' n. 生活环境，栖息地 (8)',
+'nowhere ':' adv. 无处，哪里都不(8)',
+'dolphin ':' n. 海豚 (8)',
+'resident ':' n. 居民，住户 (11)',
+'chief ':' n. 首领，最高领导人 adj.主要的；首席的 (11)',
+'committee ':' n. 委员会 (11)',
+'entirely ':' adv. 完全地，全部地，完整地 (11)',
+'smog ':' n. 雾霾，烟雾 (11)',
+'get rid ':' of 摆脱，丢弃，扔掉 (11)',
+'protest ':' vi. 反对，抗议 vt.坚持声称，申辩 ',
+'profit ':' n. 利润，收益；好处 vi. & vt. 获益，得到好处 (11)',
+'defence ':' (AmE defense) n. 辩护；防御，保护；防御物；国防；防守 (11)',
+'various ':' adj. 各种不同的，各种各样的 (11)',
+'process ':' n. 过程，进程；步骤，流程 vt.加工，处理 (11)',
+'economic ':' adj. 经济的，经济上的；可赚钱的 (12)',
+'policy ':' n. 政策，方针；原则 (12)',
+'branch ':' n.（政府或机构）部门；分部；树枝；支流；分支 (12)',
+'strategy ':' n. 策略，行动计划；策划，部署 (12)',
+'recycle ':' vt. 回收利用，再利用 (12)',
+'subway ':' n. 地铁；地下人行道 (12)',
+'former ':' adj. 昔日的，前任的；以前的，从前的 (12)',
+'official ':' n. 官员，要员 adj.公务的；正式的，官方的(12)',
+'poverty ':' n. 贫穷，贫困；贫乏 (12)',
+'poison ':' vt. 污染；毒死，毒害 n.毒物，毒药 (13)',
+'chemical ':' n. 化学制品 adj.化学的；化学作用的(13)',
+'consequence ':' n. 结果，后果；重要性 (13)',
+'give rise to ':'使发生（或存在）(13)',
+'further ':' adj. 更多的，更进一步的 adv.较远，更远；进一步',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+            // 更多单词
+        };
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 2;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+    </script>
+</body>
+</html>

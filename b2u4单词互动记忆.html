@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆(B2U4)</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（B2U4）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+       '*sleeve ':' n. 袖子 ',
+'devote':' oneself to 致力，专心，献身(43)',
+'earnest* ':' adj. 非常认真的；诚实的，真诚的(43)',
+'butterfly* ':' n. 蝴蝶(43)',
+'literature ':' n. 文学，文学作品(44)',
+'shell ':' n. 贝壳；壳(44)',
+'in store (for sb)':' 即将发生(在某人身上)，等待着(某人)(44)',
+'appeal ':' ⅵ. 有吸引力；申诉；呼吁. n. 吸引力；申诉；呼吁(44)',
+'determine ':' vt. 确定；支配；决心. vi. 决心(44)',
+'significant ':' adj. 有重要意义的，显著的(44)',
+'description ':' n. 描述，形容，说明(45)',
+'sensitive ':' adj. 感觉敏锐的；体贴的；敏感的；灵敏的(45)',
+'soul ':' n. 灵魂；心性，内心(45)',
+'reflect ':' vt. &vi. 反映，显示；映出(影像)；反射(声，光、热等)；沉思(45)',
+'capable ':' adj. 有能力，有才能；能力强的(45)',
+'awaken ':' vt. & vi. 唤起，被唤起；(使)醒来(45)',
+'launch ':' vt. 使(船)下水；开始从事，发动(45)',
+'permanence ':' n. 永久，持久性(45)',
+'contain ':' vt. 包含，含有，容纳(45)',
+'element ':' n. 要素，基本部分(45)',
+'universal ':' adj. 普遍的，共同的；普遍存在的(45)',
+'summary ':' n. 总结，概括，概要(45)',
+'in summary':'总的来说(45)',
+'feature ':' n. 特色，特征. vt. 以…为特色，是…的特征(47)',
+'author ':' n. 作者，作家(47)',
+'therefore ':' adv. 因此，所以(47)',
+'issue ':' n. 重要议题，争论的问题；问题，担忧；(报刊)一期. vt. 宣布，公布(47)',
+'novel ':' n. (长篇)小说(47)',
+'draw on':'凭借，利用(47)',
+'upper ':' adj. 上部的；上面的(47)',
+'gap ':' n. 差距；间隙(47)',
+'context ':' n. (事情发生的)背景，环境，来龙去脉；上下文，语境(47)',
+'specific ':' adj. 特定的；明确的，具体的(47)',
+'ought to ':' modal v.应该，应当(48)',
+'particular ':' adj. 特别的，格外的；特指的；挑剔的(48)',
+'in particular':' 尤其，特别(48)',
+'topic ':' n. 话题；题目；标题(48)',
+'collection ':' n. (同类)收藏品；作品集；募捐(48)',
+'section ':' n. 部分，部门；部件，散件(48)',
+'mean ':' adj. 吝啬的，小气的；不善良的，刻薄的(49)',
+'transport ':' vt. 运输，运送. ',
+'turkey ':' n. 火鸡；火鸡肉(49)',
+'generosity ':' n. 慷慨，大方，宽宏大量(49)',
+'chapter ':' n. 章节；篇章(50)',
+'poetry ':' n. 诗集，诗歌(50)',
+'stage ':' n. 舞台；阶段；步骤. vt. 上演，举办(50)',
+'autobiography* ':' n. 自传(50)',
+'biography* ':' n. 传记，传记作品(50)',
+'extremely ':' adv. 极其，非常，极端(53)',
+'destroy ':' vt. 摧毁，毁灭，破坏(53)',
+'defeat ':' vt. 击败，战胜. n. 失败，战败；击败(53)',
+'attempt ':' vt. & n. 努力，尝试，试图(53)',
+'straighten ':' vt. 挺直；(使)变直，变正(53)',
+'strain* ':' n. 用劲，使力；压力，拉力；重负(53)',
+'alongside ':' adv. 在…旁边；与…一起(53)',
+'accomplish* ':' vt. 完成(53)',
+'noble ':' adj. 贵族的，高贵的；崇高的；宏伟的(54)',
+'confused ':' adj. 糊涂的，迷惑的；不清楚的，混乱的(54)',
+'clear up':' (头脑)清醒；使整洁，清理；天气放晴(54)',
+'be on the point of doing sth':'正要做某事(54)',
+'weave* ':' vi. & vt. (weaved，weaved)迂回行进，穿行.(wove，woven)编(54)',
+'mushy* ':' adj. 糊状的，软而稠的(54)',
+'flash ':' n. 闪光，闪现 vt. &vi. (使)闪光；(使)闪现(54)',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+            // 更多单词
+        };
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+    </script>
+</body>
+</html>

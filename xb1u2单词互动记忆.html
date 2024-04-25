@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆(XB1U2)</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（XB1U2）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+     'Austrian ':' adj. 奥地利的，奥地利人的(15)',
+'composer ':' n. 作曲家，作曲者(15)',
+'symphony ':' n. 交响乐，交响曲(15)',
+'concerto ':' n. 协奏曲* (15)',
+'Polish ':' adj. 波兰的，波兰人的，波兰语的* (15)',
+'compose ':' vt.& vi. 作曲；组成；撰写；使镇静(16)',
+'deserve ':' vt.值得，应得(16)',
+'tear apart':'使(关系密切的人)分离，分开(16)',
+'pleasant ':' adj. 令人愉快的，可喜的；友好的，和善的(16)',
+'whisper ':' vi. &vt.耳语，低语；私下说；沙沙作响. n. 低语；轻柔的声音；传言(16)',
+'dramatic ':' adj. 激动人心的，引人注目的；突然的；戏剧的；夸张的(16)',
+'weep ':' vi. &vt. (wept wept)哭泣，流泪(16)',
+'overcome ':' vt. (overcame，overcome)受到…的极大影响，克服，解决；战胜(16)',
+'sorrow ':' n. 悲伤，悲痛；伤心事(16)',
+'grave ':' n. 坟墓；死亡，去世. adj. 严重的；严肃的(16)',
+'transform ':' vi. &vt. (使)变形，(使)改观，(使)转化(16)',
+'forever ':' adv. 永远；长久地；老是(16)',
+'combine ':' vt.& vi. (使)融合；(使)结合，(使)混合；兼做；合并(16)',
+'rely':' on 依赖，依靠；信任(17)',
+'blues ':' n. (the blues)布鲁斯音乐，蓝调；忧郁，悲伤(17)',
+'folk ':' adj. 民间的、民俗的. n. 民间音乐；人们；各位；家人(17)',
+'tune ':' n. 曲调，曲子. vt.调音；调频道；调整(17)',
+'lyric ':' n. 歌词，抒情诗. adj. 抒情的，吟唱的* (17)',
+'throw in':'奉送，额外赠送(17)',
+'for good measure':'作为额外增添(17)',
+'rural ':' adj. 乡村的，农村的(17)',
+'surroundings ':' n. 周围，环境(17)',
+'heaven ':' n. 极乐之地* (17)',
+'breeze ':' n. 微风，和风* (17)',
+'guarantee ':' vt.保证，担保；确保；为(产品)提供保修. n. 保证，担保；保修单(17)',
+'jazz ':' n. 爵士乐(19)',
+'arch ':' n. 拱门；拱(19)',
+'adaptation ':' n. 改编本，改写本；适应(19)',
+'communist ':' adj. 共产主义的. n. 共产主义者(19)',
+'invader ':' n. 武装入侵的军队(或国家)，侵略者* (19)',
+'consist':' of 由…组成(或构成)(19)',
+'defend ':' vt.& vi. 保护，防御；辩白，辩解(19)',
+'solo ':' n. 独奏，独唱. adj. 独自的；独唱的，独奏的* (19)',
+'flow ':' vi. 流，流动；充满；涨起. n. 流，流动；连贯；涨潮(20)',
+'spacecraft ':' n. (pl spacecraft)航天(飞行)器，宇宙飞船* (21)',
+'solar ':' adj. 太阳的，太阳能的 (21)',
+'greet ':' vt.问候，欢迎，招呼(21)',
+'get down to (doing) sth':'开始做某事，开始认真注意(或对待)某事(21)',
+'suitable ':' adj. 合适的，适宜的，适当的，适用的(21)',
+'recording ':' n. 录音，视频；录制；记录，记载(21)',
+'distant ':' adj. 遥远的，远处的，久远的；冷淡的；远亲的(21)',
+'volume ':' n. 音量，响度；体积，容积，容量；量，额(23)',
+'stare ':' vi. 盯着看，凝视，注视. n. 盯，凝视，注视(23)',
+'breath ':' n. 呼吸的空气；一次吸入的空气；微量，迹象(23)',
+'unusual ':' adj. 特别的，不寻常的；独特的，与众不同的(23)',
+'grab ':' vt.& vi. 吸引；抓住；赶紧，抓紧(23)',
+'sweep ':' vt.& vi. (swept，swept)席卷，横扫；打扫；吹走；清除. n. 打扫，清扫(23)',
+'disc ':' n. (AmE disk)唱片；光碟，光盘；圆盘，圆片(23)',
+'complicated ':' adj. 复杂的，难懂的(23)',
+'lane ':' n. (乡间)小路；小巷；车道；跑道；航线* (23)',
+'accompany ':' vt.陪同，陪伴；伴随，与…同时发生；为…伴奏(23)',
+'expectation ':' n. 希望，盼望；预料，预期；期望，指望(23)',
+'remarkable ':' adj. 非凡的，奇异的，显著的，引人注目的(25)',
+'stream ':' vi. &vt.鱼贯而行，涌动；流，流动. n. 小溪；(人)流，(车)流(25)',
+'enthusiastic ':' adj. 热情的，热心的(25)',
+'handkerchief ':' n. (pl handkerchiefs or handkerchieves)手帕，纸巾(25)',
+'vast ':' adj. 大量的，辽阔的，巨大的(25)',
+'gifted ':' adj. 有才华的，有天赋的(25)',
+'reputation ':' n. 名誉，名声(25)',
+'brilliant ':' adj. 聪颖的，技艺高的；巧妙的，很成功的，明亮的(25)',
+'prediction ':' n. 预言，预测(25)',
+'extraordinary ':' adj. 不寻常的，非凡的；意想不到的，令人惊奇的(25)',
+'depress ':' vt.使抑郁，使沮丧；使萧条，使不景气(25)',
+'upset ':' adj. 难过的，失望的. vt. ',
+'possess ':' vt.具有(特质)；拥有；支配，控制(26)',
+'abandon ':' vt.中止，放弃，不再有；抛弃，舍弃(26)',
+'all of a sudden':'突然，猛地(26)',
+'orchestra ':' n. 管弦乐队*(26)',
+'desperate ':' adj. 绝望的；不惜冒险的，极其需要的；极严重的(26)',
+'uplifting ':' adj. 令人振奋的，鼓舞人心的(26)',
+'ease ':' n. 容易，轻易；舒适，安逸. vi. &vt. (使)宽慰，减轻(26)',
+'genius ':' n. 天赋，天资；天才(26)',
+'variation ':' n. 变奏，变奏曲；变化，变更；变体，变种(26)',
+'chorus ':' n. 合唱曲；副歌；合唱团(26)',
+'grand ':' adj. 宏大的，宏伟的；壮丽的，堂皇的(26)',
+'finale ':' n. 末乐章，终场，结局；结尾* (26)',
+'rhythm ':' n. 节奏，韵律，律动；规律* (27)',
+'portrait ':' n. 肖像，半身画像；详细的描述，描绘* (29)',
+
+
+
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+            // 更多单词
+        };
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 2;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+    </script>
+</body>
+</html>

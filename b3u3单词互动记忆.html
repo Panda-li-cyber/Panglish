@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆(B3U3)</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（B3U3）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+      'webcam':' n. 网络摄像头 (29)',
+'pot':' n. 壶，瓶，罐；锅 (29)',
+'emoji ':' n. 表情符号 (29)',
+'comic ':' n. 连环漫画；喜剧演员 adj.滑稽的；喜剧的 (29)',
+'take off':' 突然大受欢迎，迅速流行(29)',
+'frontier ':' n. 国界，边界；尖端，边缘 (30)',
+'billion ':' n. 十亿 (30)',
+'obviously ':' adv. 显然，明显地 (30)',
+'access ':' n. 机会，权利；路径，通道 vt.到达，进入，使用 (30)',
+'extent ':' n. 程度，限度；范围 (30)',
+'to a certain extent':' 在一定程度上(30)',
+'at one’s fingertips':' 掌握（信息），熟悉、精通（知识等），了如指掌(30)',
+'click ':' n. 点击，单击；咔哒声 vi. & vt. 使发出咔哒声；点击，单击 (30)',
+'button ':' n. 按钮；纽扣 (30)',
+'recipe ':' n. 食谱；方法，秘诀 (30)',
+'military ':' adj. 军事的，军队的 (30)',
+'affair ':' n.公共事务，政治事务；事件，事情 (30)',
+'bring up':' 使显示在计算机屏幕上，调出；提出(30)',
+'majority ':' n. 大部分，大多数；多数票 (30)',
+'goods ':' n. 商品，货品；私人财产 (31)',
+'commerce ':' n. 商务；商业；贸易(31)',
+'deliver ':' vt.递送，传送；发表，宣布；交出 (31)',
+'site ':' n. 网站，站点；地点；现场 (31)',
+'boot ':' n. 靴子 (31)',
+'arrangement ':' n. 安排；布置；约定；排列 (31)',
+'cash ':' n. 现金；金钱，资金 (31)',
+'above all else':' 最重要的是，尤其是(31)',
+'establish ':' vt. 建立（关系或联系）；设立；确立；使得到认可；查实，确定 (31)',
+'software ':' n. 软件 (31)',
+'instant ':' adj. 立即的，立刻的；方便的 n.瞬间，片刻；某一时刻 (31)',
+'comment ':' n. 议论，评论；批评，指责 vi. & vt. 表达意见 (31)',
+'aware ':' adj. 知道，意识到；察觉到，发觉；有…意识的 (31)',
+'surf ':' vt. & vi.（互联网上）冲浪，浏览；进行冲浪运动 (33)',
+'guideline ':' n. 准则，指导方针；参考 (33)',
+'remove ':' vt. 删除；移走；开除 (33)',
+'file ':' n. 文件；文件夹；档案 (33)',
+'belong ':' to 属于，归…所有 (34)',
+'ballet ':' n. 芭蕾舞；芭蕾舞剧；芭蕾舞团 (34)',
+'set up':' 创建，建立(34)',
+'request ':' vt. 要求，请求 n.要求，请求；要求的事 (34)',
+'technical ':' adj. 技术的，技能的；专门技术的；专业的 (34)',
+'upload ':' vt. 上载，上传 (35)',
+'download ':' vt. 下载 (35)',
+'percentage ':' n. 百分率，百分比；提成 (37)',
+'entertainment ':' n.娱乐活动；招待，娱乐 (37)',
+'mobile ':' adj. 可移动的，非固定的；行动方便的；流动的 n.手机 (37)',
+'device ':' n. 设备，仪器；手段，技巧 (37)',
+'addict ':' n. 对…入迷的人；瘾君子 (39)',
+'be glued to sth':' 全神贯注看着某物，离某物很近(39)',
+'Wi-Fi ':' n. 无线网络 (39)',
+'battery ':' n. 电池 (39)',
+'quit ':' vt. & vi. (quit，quit；quitted，quitted) 停止，戒掉；离开 (39)',
+'shoot past':' 飞驰而过(39)',
+'knock sb off one’s feet':' 撞倒某人，使某人双脚离地(39)',
+'scary ':' adj. 恐怖的，吓人的 (40)',
+'somehow ':' adv. 不知怎么地；以某种方式（或方法） (40)',
+'be lost in':' 全神贯注，沉浸于(40)',
+'journal ':' n. 日记；报纸，杂志 (40)',
+'reveal ':' vt. 展示，显出；揭示，透露 (40)',
+'appreciate ':' vt. 欣赏，赏识；感谢(40)',
+'wide-ranging ':' adj. 覆盖面广的，内容广泛的 (40)',
+'opera ':' n. 歌剧；歌剧院 (40)',
+'badminton ':' n. 羽毛球运动(40)',
+'cut back on':'减少',
+'cut back on':'减少',
+'cut back on':'减少',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+            // 更多单词
+        };
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 2;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+    </script>
+</body>
+</html>

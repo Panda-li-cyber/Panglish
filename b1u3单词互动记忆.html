@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆(B1U3)</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+           'on the rocks':' (关系)陷于困境，濒临崩溃(30)',
+'awkward ':' adj. 笨拙的；令人尬的；难对付的(30)',
+'sight ':' n. 视野；视力；看见(30)',
+'out of one’s sight':' 脱离某人的视线(30)',
+'original ':' adj. 起初的，独创的；原作的 (30)',
+'medium ':' n. (pl media)传播信息的媒介，方法；手段，工具. adj. 中等的，中号的(30)',
+'social media':'社交媒体(30)',
+'make it':'能够出席，准时到达，获得成功(30)',
+'horrible ':' adj. 令人震惊的；可恶的，极坏的 (30)',
+'chat ':' vi. & n. 聊天，闲聊(30)',
+'café ':' n. 咖啡馆，小餐馆(30)',
+'recover ':' ⅵ. 恢复健康；恢复常态. vt. 全额收回；寻回；重新获得；恢复，重新控制(30)',
+'respond ':' vi. & vt. 回答，回应；作出反应，响应(30)',
+'loss ':' n. 失去，丧失；亏损；去世；损失(30)',
+'at a loss':'不知所措，困惑(30)',
+'judge ':' vt. & vi. 评价，(尤指)批评；判断，认为. n. 法官；裁判员(31)',
+'in the wrong':'有错，应承担责任(31)',
+'apologize ':' vi. 道歉，谢罪(31)',
+'behaviour ':' (AmE behavior) n. 行为，举止，态度(31)',
+'case ':' n. 具体情况，事例；案件；容器(31)',
+'in any case':'无论如何，不管怎样(31)',
+'frank ':' adj. 坦率的，直率的(31)',
+'definitely ':' adv. 肯定，确实；确切地(31)',
+'trick ':' vt. 欺骗，欺诈. n. 诡计，花招；戏法(31)',
+'let go of':'放弃，摒弃；松手，放开(31)',
+'ignore ':' vt. 忽视，对…不予理会(31)',
+'suffer ':' vi. 受苦，受折磨；变差. vt. 遭受，蒙受(31)',
+'misunderstand ':' (misunderstood，misunderstood)vt. & ⅵ. 误解，误会(33)',
+'contact ':' vt. & vi. 联系，联络(33)',
+'explode ':' vi. (愤怒等感情)爆发，进发；爆炸 vt.使爆炸(33)',
+'generous ':' adj. 宽宏大量的，仁慈的；慷慨的(33)',
+'count on':'依赖，依靠，指望(34)',
+'eat away at':'腐蚀，侵蚀，逐渐破坏(34)',
+'shallow ':' adj. 肤浅的，浅薄的，浅的(34)',
+'blog ':' n. 博客，网志(34)',
+'come between…and…':' 损害…之间的关系，离间(34)',
+'in person亲':'自，亲身(34)',
+'theme ':' n. 主题；主旋律(35)',
+'*slave ':' n. 奴隶(35)',
+'*raft ':' n. 木排，筏(35)',
+'high point':'最有意思(或最令人愉快，最好)的部分(35)',
+'through thick and thin':'不顾艰难险阻，同甘共苦(35)',
+'opinion ':' n. 意见，看法，(群体的)观点，信仰(37)',
+'in one’s opinion ':'在某人看来(37)',
+'quality ':' n. 品德，素质；质量；特征 adj.优质的，高质量的(37)',
+'basis ':' n.(pl bases) 基础，原因；基准(37)',
+'respect ':' vt. 尊重，尊敬. n. 尊敬，敬意，重视(37)',
+'get over':'克服；恢复常态(37)',
+'efficient ':' adj. 效率高的，有功效的(37)',
+'extra ':' adj. 额外的，分外的，附加的 adv.额外，另外；特别，格外(37)',
+'bring out':'使显现，使表现出(37)',
+'measure ':' vt. 估量，判定，测量. n. 措施；衡量(37)',
+'reflection ':' n. 沉思；反射；映像；反映(39)',
+'seek ':' (sought，sought) vi. 试图；寻找；争取. vt. 寻求；寻找(39)',
+'escape ':' vi. & vt. 逃跑，逃脱；避开，避免；被遗忘 n.逃离，逃脱(39)',
+'smooth out':'清除(问题)，克服(困难)(39)',
+'be meant to do sth':'注定要做某事，应做某事(39)',
+'benefit ':' n. 优势，益处，成效. vt. 使受益. ⅵ. 得益于(39)',
+'comfort ':' vt. 宽慰，抚慰. n. 舒服；安慰(39)',
+'joy ':' n. 高兴，愉快；令人高兴的人(或事)，乐趣(39)',
+'failure ':' n. 失败；失败的人(或事)；未履行；故障(39)',
+'take on':'呈现，具有;从事，承担(39)',
+'in full measure':'最大程度地，最大限度地(39)',
+'moment ':' n. 时光，时机；瞬间；某个时刻(39)',
+'indeed ':' adv. 其实，实际上；的确；真止地(39)',
+'well-meaning ':' adj. 出于好心的，善意的(39)',
+
+
+
+            // 更多单词
+        };
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+    </script>
+</body>
+</html>

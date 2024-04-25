@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆(B2U1)</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（B2U1）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+            'type': 'n. 类型，种类 v. 打字',
+            'comedy': 'n. 喜剧，喜剧片；滑稽的事物',
+            'documentary': 'n. 纪实节目，纪录片 adj. 书面的，文件的',
+            'fantasy': 'n. 幻想，想象 v. 想象，幻想',
+            'horror': 'n. 震惊，恐惧；恐怖故事（或电影等）',
+            'romance': 'n. 浪漫史，爱情关系，风流韵事',
+            'fiction': 'n. 小说；虚构的事，谎言；杜撰，编造',
+            'science fiction': '科幻小说',
+            'behind the scenes': '在幕后；秘密地',
+            'actually': 'adv. 实际上，事实上',
+            'brief': 'adj. 短暂的；简短的',
+            'familiar': 'adj. 熟悉的；常见的',
+            'factor': 'n. 因素，要素',
+            'dinosaur': 'n. 恐龙；守旧落伍的人',
+            'roar': 'n./ v. 吼叫，咆哮',
+            'sheet': 'n. 床单，被单，纸张；薄片',
+            'envelope': 'n. 信封',
+            'attach': 'v. 系上，贴上，附上（附件）；重视；认为…重要',
+            'visual': 'adj. 视觉的，视力的',
+            'frequently': 'adv. 经常地，频繁地',
+            'studio': 'n. 录音室，播音室，演播室；（电影）摄影棚，电影公司；工作室',
+            'enable': 'v. 使能够，使可能；激活，启动；准许，授权',
+            'aid': 'n. / v.帮助；援助，救助',
+            'prefer': 'v. 更喜爱，宁可',
+            'creative': 'adj. 创造的，创造性的',
+            'approach': 'v. 靠近，临近；接洽，交谈；对付，处理 n. 方法，态度；靠近，接近',
+            'angle': 'n. 角；角度；视角，立场',
+            'prop': 'n. 支柱，支撑物；（戏剧或电影中的）道具',
+            'revise': 'v. 改变；修改，修订；复习',
+            'historian': 'n. 历史学家，史学工作者',
+            'ensure': 'v. 确保，保证；保护，使安全',
+            'Atlantic': 'n. 大西洋；adj. 大西洋的',
+            'ocean': 'n. 海洋，大海',
+            'not to mention': '更不必说；不必提及',
+            'lecture': 'n. 讲座，讲课，演讲；训斥，告诫 v. 开讲座，讲课；训斥，告诫',
+            'justice': 'n. 公平，正义；公道，合理',
+            'do justice to': '公平对待；恰当处理',
+            'iceberg': 'n. 冰山',
+            'dragon': 'n. 龙',
+            'award': 'n. 奖，奖品；奖金 v. 授予，给予',
+            'audience': 'n. 观众，听众',
+            'perform': 'v. 演出，表演；执行，履行',
+            'location': 'n. 地点，位置；外景拍摄地；定位',
+            'in additional to': '除……之外',
+            'martial': 'adj. 军事的，战争的',
+            'martial art': '武术',
+            'desert': 'n. 沙漠，荒漠 v. 离弃，舍弃；抛弃，遗弃',
+            'jungle': 'n. 丛林；密林',
+            'title': 'n. 名称，标题；职位名称；称号',
+            'adapt': 'v. 适应；调整，使适合；改编；改造，改装',
+            'regard': 'v. 认为，把……看作；注视',
+            'classic': 'adj. 典型的，有代表性的；经典的 n. 经典作品，名著',
+            'super': 'adj. 极好的，极优秀的；超级的',
+            'solution': 'n. 解决办法；解答，答案',
+            'onto': 'prep. 朝；向',
+            'system': 'n. 系统；体制，制度',
+            'cure': 'n. 药物，疗法；治愈 v. 治愈',
+            'eventually': 'adv. 最终，结果',
+            'typical': 'adj. 典型的，有代表性的',
+            'fancy': 'v. 喜欢，想要； 钦慕，爱慕 adj. 奢华的；花哨的；复杂的',
+            'narrow': 'adj. 狭窄的，狭隘的；勉强的 v. （使）缩小；（使）变窄',
+            'recommend': 'v. 建议，劝告 ；推荐',
+            'personality': 'n. 个性，性格；气质',
+            'despite': 'prep. 尽管，即使',
+            'major': 'adj. 重大的，主要的 n. 主修科目，专业 v. 主修，专攻',
+            'event': 'n. 事件；活动；赛事',
+            'pull up': '拔起；停车，刹车',
+            'wave': 'v. 挥手；挥手示意；挥舞 n. 海浪；大量涌现',
+            'recollect': 'v. <正式>回忆，想起；使（自己）镇定下来（recollect oneself）',
+            'recall': 'v. 记起，回想起 n. 记忆力，记性',
+            'angel': 'n. 天使；仁慈的人，善人；宝贝',
+            'dandy': 'n. 花花公子 adj. 上等的，极好的',
+            'crooked': 'adj. 弯曲的，不直的',
+            'arrow': 'n. 箭，矢；箭头，箭号',
+            'pea': 'n. 豌豆',
+            // 更多单词
+        };
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+    </script>
+</body>
+</html>

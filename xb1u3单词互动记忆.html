@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆(XB1U3)</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（XB1U3）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+    'portrait ':' n. 肖像，半身画像；详细的描述，描绘* (29)',
+'landscape ':' n. 乡村风景画；风景，景色(29)',
+'wander ':' vi. &vt.闲逛，漫步；走失；走神；蜿蜒曲折(30)',
+'gallery ':' n. 展览馆，画廊；长廊，走廊；楼上旁听席(30)',
+'decade ':' n. 十年，十年期(30)',
+'mostly ':' adv. 主要地，一般地(30)',
+'pond ':' n. 池塘，水池(31)',
+'canvas ':' n. 画布，油画；帆布* (31)',
+'neighbourhood ':' n. (AmE neighborhood)街区，城区；邻近的地方(31)',
+'strike ':' vt.& vi. (struck，struck)突然想到；撞，碰；打，突击，罢工；划(火柴). n. 罢工，袭击；击，打(31)',
+'setting ':' n. 环境，背景；情节背景(31)',
+'like-minded ':' adj. 想法相同的，志趣相投的(31)',
+'liberation ':' n. 解放，摆脱(31)',
+'opposed ':' adj. 截然不同的；强烈反对的(31)',
+'as opposed to':' (表示对比)面，相对于(31)',
+'dominate ':' vt.& vi. 在…中具有最重爱(或明显)的特色，支配，控制；占有优势；俯视(31)',
+'employ ':' vt.运用，使用；雇用(31)',
+'brushwork ':' n. (画家的)笔触，画法(31)',
+'realistic ':' adj. ',
+'essence ':' n. 本质，精髓；香精，精油(31)',
+'vivid ':' adj. 鲜明的，耀眼的；生动的(31)',
+'vision ':' n. 远见卓识；视力，视野；想象(31)',
+'display ':' vt.陈列，展出；显示，表现. n. 陈列，展览，表现；展示(31)',
+'worthy ':' adj. 值得(或应得)…的；值得尊敬的，值得注意的(31)',
+'calling ':' n. 职业，事业；使命感(33)',
+'shade ':' n. 阴影部分；色度；阴凉处(34)',
+'bathe ':' vt.以(光线)洒满，覆盖，使沐浴(在光线里)；用水清洗(34)',
+'pixel ':' n. 像素* (34)',
+'wage ':' vt.开始，发动. n. (通常指按周领的)工资，工钱(35)',
+'campaign ':' n. (宣传)活动，运动；战役. vt.& vi. 发起运动，参加活动(35)',
+'architecture ':' n. 建筑设计，建筑风格；建筑学(35)',
+'toast ':' n. 吐司，烤面包片；干杯，祝酒. vt.为…干杯；烤；取暖(37)',
+'garlic ':' n. 蒜，大蒜(37)',
+'mushroom ':' n. 蘑菇(37)',
+'arrange ':' vt.& vi. 整理，布置；安排，筹备(37)',
+'raw ':' adj. 未经加工的，自然状态的；生的，未烹制的(37)',
+'scroll ':' n. 长卷纸，卷轴*(39)',
+'insight ':' n. 洞悉，了解；洞察力，领悟(39)',
+'crop ':' n. 庄稼，作物；收成，产量(39)',
+'wind ':' vi. &vt. (wound，wound)蜿蜒，迂回；上发条；缠绕(39)',
+'sail ':' vi. &vt. (乘船)航行；起航；驾驶(船只)；飘，掠. n. 帆；乘船航行(39)',
+'civilian ':' n. 平民，老百姓，庶民(39)',
+'all walks of life':'各行各业，社会各界(39)',
+'butcher ':' n. 肉贩，屠夫(39)',
+'go about sth':'忙于做某事，继续做某事 (39)',
+'apparent ':' adj. 显而易见，明白易懂，显然(39)',
+'ink ':' n. 墨水，墨汁* (39)',
+'perspective ':' n. 透视法；态度，观点；客观判断力；景观，远景*(39)',
+'precise ':' adj. 细致的，精细的；准确的，精确的；恰好的(39)',
+'ambitious ':' adj. 宏大的，艰巨的；有野心的，有雄心的(39)',
+'enormous ':' adj. 巨大的，庞大的(39)',
+'comprehensive ':' adj. 全面的，详尽的；综合性的(40)',
+'clothing ':' n. 衣服，服装(40)',
+'temple ':' n. 庙宇，寺院(40)',
+'structure ':' n. 建筑物；结构，构造，精心组织(40)',
+'overall ':' adj. 全面的，综合的. adv. 全部，总计；一般来说，大体上(40)',
+'critic ':' n. 批评家，评论家；批评者，挑剔的人(40)',
+'inspection ':' n. 检查，查看，审视；视察(40)',
+'expose ':' vt.揭露，揭穿；暴露，显露；使遭受；使接触(40)',
+'political ':' adj. 政治的，政府的，政权的；政党的，党派的(40)',
+'soldier ':' n. 军人，士兵(40)',
+'crisis ':' n. (pl crises ',
+'decline ':' n. 衰退，衰落，减少，下降. vi. &vt.减少，下降，衰退，衰落；谢绝(40)',
+'overthrow ':' vt. (overthrew，overthrown)推翻，打倒  n. ',
+'be down to':'由…引起(或造成)(40)',
+'scale ':' n. 规模，范围；等级，级别；标度；比例*(40)',
+'emperor ':' n. 皇帝(40)',
+'in one’s own right':' 凭自身的资格(或努力)(40)',
+'outstanding ':' adj. 优秀的，杰出的；突出的，明显的(40)',
+'exhibition ':' n. 展览，展出(40)',
+'rare ':' adj. 稀少的，罕见的；稀罕的，珍贵的(40)',
+'speak volumes about':'充分说明，清楚表明(40)',
+'historic ':' adj. 历史上著名的；有史时期的(40)',
+'career ':' n. 经历，事业；生涯，职业(41)',
+'barren ':' adj. 贫瘠的，不毛的；不结果实的*(43)',
+'frozen ':' adj. 结冰的，冰封的；冷冻的；冻僵的(43)',
+'imply ':' vt.含有…的意思，暗示；暗指(44)',
+
+
+
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+            // 更多单词
+        };
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 2;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+    </script>
+</body>
+</html>

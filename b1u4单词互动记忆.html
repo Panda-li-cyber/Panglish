@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆(B1U4)</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+         'skip ':' vt. 不做(应做的事情等)；跳过 vi.蹦蹦跳跳地走；略过(43)',
+'yogurt ':' n. 酸奶(43)',
+'*faint ':' vi. 昏厥 adj.快要昏厥的；微弱的；可能性不大的(44)',
+'pass out':'昏迷，失去知觉(44)',
+'immediately ':' adv. 立即，马上 conj.一…就(44)',
+'concentrate ':' vi. & vt. 集中(注意力、思想等)；全神贯注(45)',
+'sex ':' n. 性别(45)',
+'extreme ':' adj. 极端的；严重的 n.极端不同的感情(或境况行为方式等)(45)',
+'slim ':' vi. 变苗条，减肥. adj. 苗条的；微薄的，小的(45)',
+'slim down':'变苗条，减肥(45)',
+'per cent ':' n. 百分之… (45)',
+'concerned ':' adj. 担心的，忧虑的；关注的，关切的(45)',
+'effect ':' n. 效果，作用；影响(45)',
+'side effect':' 副作用(45)',
+'prove ':' linking v. 后来被发现是. vt. 证明，证实(45)',
+'slightly ':' adv. 稍微，略微(45)',
+'diet ':' n. 节食，日常饮食. vi. 节食，进行规定饮食(45)',
+'nutrition ':' n. 营养(45)',
+'function ':' ⅵ. 起作用，正常工作，运转. n. 作用，功能，职能(45)',
+'take in':'摄入，吸收；欺骗(45)',
+'energetic ':' adj. 精力充沛的，充满活力的(45)',
+'effective ':' adj. 有效的；生效的(45)',
+'get into shape':'强身健体(45)',
+'frightened ':' adj. 害怕的，惊吓的，受惊的(47)',
+'within ':' prep. 在(某段时间)之内；在(某段距离、范围)之内；在…里(47)',
+'rather ':' adv.相反，而是；相当；更准确地说(47)',
+'aspect ':' n. 方面，层面(47)',
+'pressure ':' n. 心理压力，紧张；压力；要求，催促(48)',
+'contribute ':' vt. & vi.是…的原因之一；捐赠，捐献；增加，添加(48)',
+'contribute to':' 促成，造成；为……做贡献(48)',
+'in the short/long term':'从短期/长期看(48)',
+'memory ':' n. 记忆力，记性；记忆，回忆(48)',
+'attack ':' n. 发作；攻击；抨击 vt. & vi. 攻击；侵袭；抨击(48)',
+'amount ':' n. 数量(49)',
+'schedule ':' n. 日程安排，工作计划；时间表(49)',
+'negative ':' adj. 消极的，负面的；坏的，有害的；否定的(49)',
+'plastic ':' adj. 可塑的；塑料的. n. 塑料(50)',
+'surgery ':' n. 外科手术(50)',
+'plastic surgery':'整形手术；整形外科(50)',
+'campus ':' n. (大学、学院的)校园，校区(50)',
+'guy ':' n. 小伙子，家伙(50)',
+'treatment ':' n. 治疗；对待，待遇；处理(50)',
+'addition ':' n. 增加，添加；加法(50)',
+'in addition':'此外(50)',
+'saying ':' n. 格言，谚语，警句(53)',
+'hang over':'使忧心忡忡，担心可能发生(53)',
+'jeans ':' n. 牛仔裤(53)',
+'male ':' adj. 男性的；雄性的. n. 男性，雄性(53)',
+'female ':' adj. 女性的；雌性的. n.女性，雌性(53)',
+'guard against':'防范，防止，提防(53)',
+'beauty ':' n. 美，美丽；美人，美好的东西(53)',
+'fight a losing battle':'打一场无望取胜的仗(53)',
+'live up to':'达到，符合，不辜负(53)',
+'end up':'最终成为，最终处于(53)',
+'fashion ':' n. 时尚，时兴，流行款式(53)',
+'shadow ':' n. 阴影，影子；昏暗处，阴暗处(53)',
+'digital ':' adj. 数码的，数字的(53)',
+'series ':' (pl series)一系列，连续(53)',
+'show off':'显示，展示；炫耀，卖弄(53)',
+'external ':' adj. 外来的，外在的；外面的，外部的(54)',
+'strength ':' n. 优势；力气，力量；实力(54)',
+'talent ':' n. 天资，天赋；人才，天才(54)',
+'piano ':' n.钢琴(54)',
+'take pride in':'为…自豪，为…骄傲(54)',
+'content ':' n.内容；目录(54)',
+'individuality ':' n. 个性，个人特征(54)',
+'achievement ':' n. 成就，成绩；达到，完成(54)',
+'app ':' n. 应用程序，应用软件(application的缩写) (55)',
+
+
+
+
+            // 更多单词
+        };
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+    </script>
+</body>
+</html>

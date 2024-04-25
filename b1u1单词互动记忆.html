@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+            'potential ':' n. 潜力；可能性adj. 潜在的，可能的',
+'senior':'adj. 中学的；级别高的；高级水平的；年老的   n. 级别地位较高者；年长者；高水平运动员',
+'path ':' n. 道路；小路；成功的途径',
+'challenge ':' n. & vt. 挑战；质疑',
+'thinking ':' n. 思维，思想；想法',
+'positive ':' adj. 积极乐观的；良好的，正面的',
+'opportunity ':' n. 机会，时机',
+'lie in ':'存在，在于 ',
+'rise to':'能够处理',
+'acquire ':' vt. 获得，得到',
+'effort ':' n. 努力，费力的事；试图',
+'advance ':' n. 进步，进展；前进，行进vt. & vi. 发展，进步',
+'amazing ':' adj. 令人大为惊奇的，令人惊喜的',
+'confidence ':' n. 信心，信任；把握',
+'make a difference ':'起作用，有影响',
+'make the most of ':'充分利用；尽情享受',
+'resource ':' n. 资源；资料；谋略',
+'take advantage of ':'利用 ',
+'facility':'n. 设施，设备；场所',
+'equal ':' adj. 相同的，相等的；平等的；相当的，能胜任的n. 同等的人（物）vt. 与…相等；比得上',
+'attitude ':' n. 态度，看法',
+'goal ':' n. 目标；进球得分',
+'balance ':' vt. 同等重视；（使）保持平衡；权衡重要性n. 均衡，平衡；平衡能力',
+'improve ':' vt. & vi. 改进，改善',
+'last but not least ':'最后但同样重要的 ',
+'well-rounded ':' adj. 全面发展的；面面俱到的',
+'individual ':' n. 个人adj. 单独的，个别的',
+'character ':' n. 品质，性格；特点；人物，角色；文字',
+'responsible ':' adj. 有责任，负责；可靠的',
+'ahead ':' adv.（时间、空间）向前；提前',
+'junior':'adj.少年的；地位低的  n. 职位较低者；青少年运动员',
+'forward ':' adv. 向将来；向前；进展，前进',
+'look forward to':'盼望；期待',
+'independent':'n.独立的；自主的；有主见的',
+'focus ':' n. 焦点，重点vt. & vi. 集中',
+'detail ':' n. 细节；具体情况',
+'as a result of ':'由于',
+'tip ':' n. 指点，实用的提示；尖端；小费',
+'base ':' vt. 以…为基础（依据）n. 根据；基础；基底；总部，大本营',
+'remind ':' vt. 提醒，使想起',
+'stick to ':'坚持；固守，维持 ',
+'proposal ':' n. 提议，建议，动议',
+'aim ':' n. 目的，目标vi. & vt. 力争做到；目的是；针对',
+'style ':' n. 风格；方式；样式',
+'technique ':' n. 技巧，技艺；技能',
+'workshop':'n. 车间，作坊；研讨会',
+'professional':'adj.职业的，专业的，娴熟的，精通业务的   n.专门人员，专业人士',
+'material ':' n. 材料；素材adj. 物质的，实际的；客观存在的',
+'poster ':' n. 海报；（在网络留言板上）发布消息的人',
+'secondary ':' adj. 中学的；次要的',
+'exchange ':' n. & vt. 交换；交流；兑换',
+'host ':' n. 主人；东道主；主持人vt. 主办；主持',
+'a.m. ':' 上午，午前',
+'p.m. ':' 下午，午后',
+'biology ':' n. 生物学',
+'tough ':' adj. 艰难的；严厉的；坚强的；坚固的',
+'alarm ':' n. 闹钟；恐慌；警报；警报器vt. 使惊恐，使害怕',
+'contribution ':' n. 贡献；捐款；捐赠',
+'fortunately ':' adv. 幸运地，幸亏',
+'over time ':'随着时间流逝，久而久之 ',
+'option ':' n. 可选择的事物，选择；选修课',
+'butter ':' n. 黄油',
+'pudding ':' n. 甜点；布丁',
+'attract ':' vt. 吸引，使喜爱；招引；引起（反应）',
+'rugby ':' n. 橄榄球运动',
+'calligraphy':'n. 书法，书法艺术',
+
+            // 更多单词
+        };
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+    </script>
+</body>
+</html>

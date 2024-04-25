@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆(B3U4)</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（B3U4）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+      'republic ':' n. 共和国，共和政体 (44)',
+'malaria ':' n. 疟疾 (44)',
+'deadly ':' adj.致命的；十足的，彻底的(44)',
+'survival ':' n. 生存，存活；残存物，幸存事物 (44)',
+'province ':' n. 省，省份 (44)',
+'broad ':' adj. 广泛的；宽阔的，广阔的；概括的；开阔的 (44)',
+'intend ':' vi. & vt. 想要，计划；意指(44)',
+'extract ':' n. 提取物；选录 ',
+'herb ':' n. 药草，香草；草本 (45)',
+'refer ':' to 查阅，参考；提到，谈及 (45)',
+'experiment ':' n. 实验，试验；尝试，实践 vi.做试验，进行实验；尝试 (45)',
+'trial ':' n. 试用，试验；审讯，审判；考验 vi. & vt. 测试，试验 (45)',
+'limited ':' adj. 有限的 (45)',
+'household ':' adj. 家庭的，家用的，家务的 n.一家人，家庭 (45)',
+'container ':' n. 容器；集装箱，货柜 (45)',
+'postpone ':' vt. 延迟，延期 (45)',
+'sufficient ':' adj. 足够的，充足的 (45)',
+'data ':' n. 数据，资料，材料 (45)',
+'speed up':' （使）加速(45)',
+'pay off ':'成功，奏效，达到目的(45)',
+'error ':' n. 错误，差错 (45)',
+'through trial and error':' 反复试验(45)',
+'wisdom ':' n. 智慧，知识，学问；才智；明智 (45)',
+'beneficial ':' adj. 有益的，有用的(45)',
+'conduct ':' vt. & vi. 组织，实施；指挥；引导；举止 (47)',
+'illustrate ':' vt. 说明，解释；加插图于 (47)',
+'penicillin ':' n. 青霉素，盘尼西林(48)',
+'mould ':' (AmE. mold) n. 霉菌；模具；类型 vt.浇铸；塑造 (48)',
+'bacteria ':' n. (sing bacterium) 细菌 (48)',
+'surround ':' vt. 围绕，环绕；包围；与…紧密相关 (48)',
+'indicate ':' vt. 表明；暗示；提及；指出 (48)',
+'accident ':' n. 意外，偶然的事；事故，意外遭遇 (48)',
+'by accident':' 偶然，意外地(48)',
+'intelligent ':' adj. 有才智的，聪明的；有智力的 (48)',
+'favour ':' (AmE favor) vt. 较喜欢；偏袒；有助于 n.帮助，好事；赞同；偏袒 (48)',
+'politician ':' n. 政治家，从政者；投机钻营者 (49)',
+'lightning ':' n. 闪电 (49)',
+'electricity ':' n. 电，电能 (49)',
+'theory ':' n.学说，论；原理；看法，意见(49)',
+'thunderstorm ':' n. 雷雨，雷暴(49)',
+'ribbon ':' n. 带子，丝带；带状物 (49)',
+'metal ':' n. 金属 (49)',
+'charge ':' vt. & vi. 充电；收费；控告；谴责；使…承担责任；使充满 n.收费；控告；谴责；掌管 (49)',
+'electric ':' adj. 电的，发电的，电动的 (49)',
+'bang ':' n. 突然的巨响；猛敲，猛击 vi. & vt. 砸；砰地关上；猛摔；碰撞 (51)',
+'with a bang':' 很成功；引人注目，有强烈影响(51)',
+'standout ':' adj. 突出的 n.突出的人（或物）(51)',
+'atomic ':' adj. 原子的；原子能的 (53)',
+'bomb ':' n. 炸弹；核武器 vt.轰炸 (53)',
+'evil ':' n. 罪恶，罪行；害处，坏处 adj.恶毒的；有害的；恶魔的 (53)',
+'involve ':' vt. 牵涉，影响；包含；（使）参加 (53)',
+'scientific ':' adj. 科学的，关于科学的；细致严谨的 (53)',
+'credit ':' n. 赞扬，认可；信用 vt.存入金额；把…归于 (53)',
+'moral ':' adj. 道德的；道义上的；品行端正的 n.品行，道德；寓意 (53)',
+'apply ':' vt. & vi. 应用；申请；涂；有关 (53)',
+'negate ':' vt. 取消，使无效；否认，否定(53)',
+'intellectual ':' adj. 脑力的；有才智的，智力发达的 n.知识分子，脑力劳动者 (54)',
+'mystery ':' n. 神秘；神秘的人（或事物）；悬疑作品 (54)',
+'let sb down':' 使某人失望(54)',
+'ignorance ':' n. 无知 (54)',
+'as to':' 关于，至于(54)',
+'take it for granted ':' 想当然地认为，认为…是理所当然 (54)',
+'freedom ':' n. 自由 (54)',
+'authority ':' n. 权威；权力；官方 (54)',
+'permit ':' vt. & vi. 允许，准许，许可；使有可能 ',
+'responsibility ':' n. 责任，负责；职责，义务 (54)',
+'declare ':' vt. 表明，宣称；公布，宣布；申报 (54)',
+'nationality ':' n. 国籍；民族 (55)',
+'put forward':' 提出，提议，建议(55)',
+'evolution ':' n. 进化；演变，发展 (55)',
+'publish ':' vt. 出版，发行；发表；公布 (55)',
+'marriage ':' n.结婚，婚姻；已婚状态 (55)',
+
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+            // 更多单词
+        };
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 2;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+    </script>
+</body>
+</html>

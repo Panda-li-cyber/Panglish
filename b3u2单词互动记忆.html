@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆(B3U2)</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（B3U2）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+      'give rise to ':'使发生（或存在）(13)',
+'further ':' adj. 更多的，更进一步的 adv.较远，更远；进一步',
+'county ':' n. 郡，县 (16)',
+'injure ':' vt. 伤害，使受伤；损害 (16)',
+'disaster ':' n. 灾难，灾害；彻底失败 (16)',
+'at large ':'整个，全部(16)',
+'reaction ':' n. 反应，回应；抗拒；化学反应 (16)',
+'crash ':' n. 碰撞声，破裂声；碰撞；崩溃 vi. & vt. 碰撞，撞击；崩溃 (16)',
+'signal ':' vi. & vt. 发信号，示意；标志 n.信号，暗号；标志；信号灯 (16)',
+'exit ':' vt. &vi. 出去，离去，退场；退出 n.出口，通道；离开 (16)',
+'orderly ':' adj. 有秩序的，有条理的，整齐的 (16)',
+'stair ':' n. 楼梯；梯级 (16)',
+'roll ':' n. 名单；卷；一管；翻滚 vi. & vt. 翻滚，滚动；翻身；卷起(16)',
+'roll call ':'点名(16)',
+'confirm ':' vt. 证实，确认；使确信；批准 (16)',
+'safe and sound':' 安然无恙的(16)',
+'hug ':' vt. 拥抱，搂抱；抱紧 (16)',
+'procedure ':' n. 程序，步骤，手续 (16)',
+'tsunami ':' n. 海啸 (17)',
+'odd ':' adj. 奇怪的，怪异的；偶尔的；不成对的 (17)',
+'bubble ':' n. 泡沫，泡，气泡 (17)',
+'occur ':' vi. 发生，出现；存在于 (17)',
+'occur to':' 被想到，浮现在脑中(17)',
+'keep one’s head ':'（在困境中）保持冷静(17)',
+'relief ':' n. 宽慰，轻松；减轻，消除；救济 (17)',
+'typhoon ':' n. 台风 (19)',
+'destructive ':' adj. 引起破坏（或毁灭）的，破坏（或毁灭性）的 (19)',
+'pole ':' n. 柱，杆；极 (19)',
+'inform ':' vt. 了解，熟悉；通知 (19)',
+'hurricane ':' n. 飓风 (20)',
+'conference ':' n. 会议，研讨会；讨论，商谈 (20)',
+'shock ':' n. 震惊，惊愕；剧烈震动 vt.使震惊 (20)',
+'scare ':' vt. & vi. 惊吓，害怕 n.恐慌；惊吓 (20)',
+'power ':' n. 电，电力；权力；政权；控制力；能力；能量；力量 (20)',
+'run out of':' 用完，耗尽(20)',
+'supply ':' n. 补给，补给品；供应；供应量，储备 vt.供应，供给，提供 (20)',
+'donate ':' vt. 捐赠，赠送；献（血） (20)',
+'charity ':' n. 慈善机构（组织）；慈善，施舍；仁爱，宽容 (20)',
+'staff ':' n. 全体职工；管理人员 vt.在…工作，任职于 (21)',
+'slide ':' n. 投影片；降低；滑行；山崩 vi. & vt. 滑行；逐渐陷入 (21)',
+'fund ':' n. 资金；基金 (21)',
+'flood ':' n. 洪水，水灾；大量 vt. & vi. 淹没，泛滥；大量涌入；充满 (23)',
+'downstairs ':' adv. 在楼下，往楼下 n.楼下 (23)',
+'document ':' n. 文件，公文；（计算机中的）文档 (23)',
+'honey ':' n. （爱称）亲爱的；蜂蜜 (23)',
+'otherwise ':' adv. 否则，不然；除此以外 (23)',
+'curious ':' adj. 好奇的；奇特的 (23)',
+'Roman ':' adj. 古罗马的；罗马的 n.古罗马人；罗马人 (25)',
+'erupt ':' vi. & vt.（火山）爆发；突然发生 (25)',
+'unearth ':' vt. 使出土，挖掘，发掘；发现，找到 (25)',
+'destination ':' n. 目的地，终点(25)',
+'bar ':' n. 酒吧；小馆子；吧台；条，块；栏杆；障碍 vt.封；阻挡；阻止 (25)',
+'import ':' n. 进口产品，输入的产品；输入 ',
+'export ':' n. 出口产品，输出的产品；出口，输出 ',
+'port ':' n. 港口，避风港；港口城市 (25)',
+'cloud-capped ':' adj. 高耸入云的，耸入云霄的 (25)',
+'ashy ':' adj. 覆盖着灰的；灰色的 (25)',
+'dawn ':' n. 黎明，破晓；开端，萌芽 vi.开始；开始清楚 (25)',
+'volcano ':' n. 火山 (25)',
+'take the form of':' 呈现…的形状；采取…的形式(25)',
+'trunk ':' n. 树干 (25)',
+'unbearable ':' adj. 难耐的，无法忍受的 (26)',
+'break out':' 突然开始，爆发(26)',
+'beyond ':' adv. 在（或向）较远处；在另一边 prep.在（或向）更远处；超出；晚于；无法；超出…之外 (26)',
+'distance ':' n. 遥远，久远；距离；差异；疏远 (26)',
+'far and wide':' 到处，各处(26)',
+'pattern ':' n. 图案，花样；模式；范例；模型 (26)',
+'column ':' n. 柱，圆柱；柱状物；栏；专栏；队，列 (26)',
+'rescue ':' n. & vt. 救援，营救，抢救(27)',
+'sharp ':' adj. 灵敏的；锋利的；急剧的；明显的；尖锐的；强烈的 (27)',
+'locate ':' vt. 找出…的准确位置；把…安置在（或建造于） (27)',
+'retire ':' vi. & vt. 退休，退役',
+
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+            // 更多单词
+        };
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 2;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+    </script>
+</body>
+</html>

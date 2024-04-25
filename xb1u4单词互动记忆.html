@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆(XB1U4)</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（XB1U4）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+    'barren ':' adj. 贫瘠的，不毛的；不结果实的*(43)',
+'frozen ':' adj. 结冰的，冰封的；冷冻的；冻僵的(43)',
+'imply ':' vt.含有…的意思，暗示；暗指(44)',
+'dimension ':' n. 方面，侧面；规模，程度；堆(44)',
+'grasp ':' n. 理解，领会；抓紧，握紧，控制；能力所及 vt.抓紧；领会，理解(44)',
+'detect ':' vt.发现，查明，侦察出(44)',
+'rhyme ':' n. 押韵词；押韵. vt.使押韵. vi. 和…同韵(44)',
+'complex ':' adj. 复杂的，难懂的. n. 建筑群；复合体；情结(45)',
+'contradictory ':' adj. 相互矛盾的，对立的(45)',
+'dig up':'发现，搜集，查明(45)',
+'clue ':' n. 线索，提示；迹象(45)',
+'cage ':' vt.把(动物)关在笼中. n. 笼子(45)',
+'trill ':' n. (鸟的)啼啭，颤音. vt.欢快地高声说. vi. 发颤音* (45)',
+'interpret ':' vt.解释，阐释；把…理解为，领会；演绎. vi. 口译(45)',
+'patience ':' n. 耐心，忍耐力(45)',
+'aside ':' adv. 到旁边，在旁边，留，存；除…以外(45)',
+'set sth aside':'把…放一边；留出(45)',
+'remote ':' adj. 偏远的，偏僻的；遥远的，久远的；远亲的(45)',
+'reward ':' vt.奖励，奖赏. n. 奖励，回报；悬赏金(45)',
+'constantly ':' adv. 始终，一直(45)',
+'logical ':' adj. 符合逻辑的；必然的，合乎情理的(45)',
+'inner ':' adj. 内心的，隐藏的；里面的，内部的(45)',
+'perceive ':' vt.注意到，意识到；将…理解为，将…视为(45)',
+'reality ':' n. 现实，实际情况；事实，实际经历(45)',
+'mist ':' n. 薄雾，水汽(47)',
+'novelist ':' n. 小说家(48)',
+'break with sth':'与某事终止关联，破除(48)',
+'ideal ':' n. 理想；典范. adj. 完美的，理想的(48)',
+'rigid ':' adj. 死板的，僵硬的；固执的，僵化的(48)',
+'undergo ':' vt. (underwent，undergone)经历，经受(48)',
+'industrialization ':' n. 工业化(48)',
+'advocate ':' vt.拥护，支持，提倡. n. ',
+'belief ':' n. 看法，信念；信仰；相信，信心(48)',
+'era ':' n. 时代，年代(48)',
+'district ':' n. 区，行政区；地区，区域(49)',
+'diverge ':' vi. 分叉，岔开；分歧，相异；偏离*(50)',
+'bend ':' vi. &vt. (bent，bent)(使)拐弯，弯曲. n. 拐弯，弯道(50)',
+'claim ':' n. 声明，宣称，所有权；索赔. vt.宣称，声称；要求；索取；获得(50)',
+'tread ':' vi. &vt. (trod，trodden)踩，踏；踩碎，践踏，行走，步行* (50)',
+'sigh ':' n. & vi. 叹气，叹息* (50)',
+'hence ':' adv. 因此，由此(50)',
+'dare ':' vi. &vt.敢于，胆敢；激(某人做某事)(53)',
+'dweller ':' n. 居民，居住者* (53)',
+'striking ':' adj. 引人注目的，显著的；妩媚动人的，标致的(53)',
+'characterize ':' vt. (alsocharacterise)是…的特征，以…为典型；使…具有特点，描述，刻画(53)',
+'Confucianism ':' n. 儒家，儒学，孔子学说(53)',
+'Taoism ':' n. ',
+'legend ':' n. 传说，传奇故事，传奇人物* (53)',
+'encounter ':' vt.偶然碰到，意外地遇见；遭遇，碰到. n. 相遇，遭遇，冲突(53)',
+'nourish ':' vt.培养，助长；抚养，滋养* (53)',
+'numerous ':' adj. 众多的，许多的(53)',
+'glorious ':' adj. 荣耀的，光荣的；壮丽的，辉煌的* (53)',
+'boom ':' n. (贸易和经济活动的)激增，繁荣. vi. 迅速发展，激增，繁荣昌盛* (54)',
+'stability ':' n. 稳定(性)，稳固(性)(54)',
+'tolerant ':' adj. 宽容的，容忍的；能耐…的(54)',
+'liberty ':' n. 自由(54)',
+'unconstrained ':' adj. 不受约束的，自由的* (54)',
+'vitality ':' n. 生命力，活力，热情(54)',
+'distinguish ':' vt.& vi. 成为…的特征，使有别于；区分，辨别；认出；使出众(54)',
+'exaggeration ':' n. 夸张，夸大* (54)',
+'metaphor ':' n. 暗喻，隐喻* (54)',
+'representative ':' adj. 典型的，有代表性的. n. 典型人物，代表性人物；代表(54)',
+'frost ':' n. 霜；霜冻，严寒天气(54)',
+'cast ':' vt. (cast，cast)投射；向…投以(视线、笑容等)；投，抛；选派角色. n. 全体演员；投，抛(54)',
+'owe ':' vt.欠(情)；欠(债)(54)',
+'debt ':' n. 人情债，情义，恩情；借款，欠款，债务(54)',
+'fascinate ':' vt.& vi. 深深吸引，迷住* (54)',
+'entitle ':' vt. (usually passive) 给…命名；使享有权利，使符合资格(54)',
+'blame ':' vt.把…归咎于，责怪，指责. n. 责任，责备，指责(55)',
+'allowance ':' n. 津贴，补助；限额；零花钱(55)',
+'make allowance for':'体谅；考虑到，估计到(55)',
+'triumph ':' n. 巨大成功，重大成就，伟大胜利. vi. 打败，战胜，成功* (55)',
+'impostor ':' n. 冒名顶替者，冒名行骗者* (55)',
+'unforgiving ':' adj. 棘手的；不饶人的，不宽容的(55)',
+'critical':' adj. 批评的，批判性的；关键的；危急的(2)',
+'trap':' vt. 使落入险境；卡住，绊住n.陷阱，罗网；圈套；困境，牢笼 (2)',
+'release':' vt. 发布；释放；松开；发泄n.释放；发行；排放，泄漏 (2)',
+
+
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+'more':'更多',
+            // 更多单词
+        };
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 2;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+    </script>
+</body>
+</html>

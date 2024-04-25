@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆(B2U3)</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（B2U3）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+         'wedding': 'n. 婚礼，结婚庆典',
+    'ceremony': 'n. 典礼，仪式',
+    'decorate': 'vt. & vi. 装饰；点缀；粉刷，油漆',
+    'formal': 'adj. （穿着、言语、行为等）适合正式场合的，正规的，庄重的',
+    'tradition': 'n. 传统，传统的信仰（或风俗）',
+    'bride': 'n. 新娘',
+    'eyecatching': 'adj. 惹人注意的，引人注目的',
+    'sari': 'n. 莎丽（南亚妇女裹在身上的长巾）',
+    'custom': 'n. 风俗，习俗；个人习惯；光顾；海关',
+    'impression': 'n. 印象，感想；影响，效果',
+    'bridegroom': 'n. 新郎',
+    'entrance': 'n. 进入，出场；入口；进入权；准许加入',
+    'anything but': '决不，根本不',
+    'ordinary': 'adj. 普通的，平常的；平庸的',
+    'romantic': 'adj. 浪漫的；爱情的；浪漫主义的',
+    'flight': 'n. 班机，航班；航程；飞行',
+    'occasion': 'n. 特殊场合，盛会；时刻；时机',
+    'in the air': '可感觉到；在传播中',
+    'merry': 'adj. 愉快的，高兴的',
+    'band': 'n. 乐队，乐团；一伙，一帮；带，箍',
+    'costume': 'n. 戏装，装扮用服装',
+    'samba': 'n. 桑巴舞；桑巴舞曲',
+    'twist': 'vi. & vt. 扭转，转动；使弯曲；曲折n. 转动；转折；曲折处',
+    'clap': 'vi. & vt. 鼓掌，拍手n. 鼓掌，拍手',
+    'march': 'vi. 齐步走，前进；游行示威n. 游行示威；行进',
+    'current': 'n. 水流，潮流；电流；思潮adj. 当前的；通用的',
+    'beer': 'n. 啤酒',
+    'roast': 'vt. & vi. 烘，烤，焙（肉等）',
+    'be caught up in': '被卷入，陷入',
+    'annual': 'adj. 每年的，年度的；一年的',
+    'engine': 'n. 发动机，引擎',
+    'fire engine': '消防车',
+    'stuff': 'n. 东西，物品；活儿，话vt. 填满，装满；把…塞进',
+    'vehicle': 'n. 交通工具，车辆；手段，工具',
+    'earn': 'vt. & vi. 赚得；获利；赢得',
+    'mirror': 'n. 镜子',
+    'apartment': 'n. 公寓套房',
+    'hunt': 'vi. & vt. 寻找，搜寻；打猎，猎杀；追捕',
+    'chain': 'n. 链子，链条；一系列；连锁店vt. 用锁链拴住',
+    'pass down': '使世代相传，流传',
+    'income': 'n. 收入，收益',
+    'per': 'prep. 每，每一',
+    'comb': 'n. 梳子；梳理（头发）vt. 梳，梳理；搜寻',
+    'package': 'n. 包，盒；包裹；一套，一揽子vt. 将…包装好；包装',
+    'promote': 'vt. 促进，推动；促销；提升，晋升',
+    'fall on': '适逢，正当',
+    'lunar': 'adj. 月亮的，月球的',
+    'observe': 'vt. 遵守；注意到；观察；庆祝',
+    'nation': 'n. 民族，国家；国民',
+    'honour': 'n. 尊敬，尊重；荣幸；荣誉vt. 尊重，尊敬；给予表扬；信守',
+    'in honour of': '为向…表示敬意',
+    'dragon': 'n. 龙',
+    'generation': 'n. 一代人；代，一代；产生',
+    'source': 'n. 来源；起源；源头',
+    'identity': 'n. 特性；身份',
+    'previous': 'adj. 先前的，以往的；稍前的',
+    'duty': 'n. 责任，义务；上班，值班；职责；税',
+    'precious': 'adj. 宝贵的，珍贵的；珍奇的，珍稀的',
+    'eve': 'n. 前夜，前夕',
+    'china': 'n. 瓷；瓷器',
+    'plate': 'n. 盘子，碟子；板块；车牌',
+    'sort': 'n. 种类，类别vt. 整理，分类；妥善处理',
+    'pork': 'n. 猪肉',
+    'bite': 'n. （咬下的）一口；咬；咬伤 vt. & vi. (bit, bitten) 咬，叮',
+    'select': 'vt. 选择，挑选',
+    'settle': 'vi. & vt. 定居；结束，解决；决定；使处于舒适的位置',
+    'convenient': 'adj. 方便的，省事的，便利的，实用的',
+    'neat': 'adj. 整洁的，整齐的；有条理的',
+    'couplet': 'n. 对联，对句',
+    'represent': 'vt. 代表；为…代言；体现',
+    'midnight': 'n. 午夜，子夜',
+    'snack': 'n. 点心，小吃',
+    'set off': '使爆炸',
+    'firecracker': 'n. 鞭炮，爆竹',
+    'firework': 'n. 烟火，烟花',
+    'fortune': 'n. 机会，运气；巨款；命运',
+    'lantern': 'n. 灯笼；提灯',
+    'riddle': 'n. 谜，谜语',
+    'willow': 'n. 柳，柳树',
+    'creep': 'vi. (crept, crept) 渐渐出现',
+    'tear': 'n. 眼泪，泪珠 vt. & vi. (tore, torn) 撕裂，撕碎',
+    'sleeve': 'n. 袖子',
+            // 更多单词
+        };
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+    </script>
+</body>
+</html>

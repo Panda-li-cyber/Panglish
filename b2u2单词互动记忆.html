@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆(B2U2)</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（B2U2）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+           'crooked': 'adj. 弯曲的，不直的',
+    'arrow': 'n. 箭，矢；箭头，箭号',
+    'pea': 'n. 豌豆',
+    'soccer': 'n.〈美〉足球运动',
+    'bat': 'n.蝙蝠;球棒,球板; vt.&vi.用球棒(板)击球',
+    'skydiving': 'n.跳伞运动',
+    'congratulation': 'n.祝贺,恭喜；贺诞；恭贺',
+    'assume': 'vt.假定,认为;承担(责任),就（职）；呈现，显露',
+    'do wonders': '创造奇迹,产生神奇作用',
+    'lung': 'n.肺',
+    'over the long term': '长期',
+    'tend': 'vi.往往会;趋向;vt.照看',
+    'immune': 'adj.有免疫力;不受影响的；免除的',
+    'disease': 'n.病,疾病',
+    'moreover': 'adv.此外,而且',
+    'reduce': 'vt.减少,缩小',
+    'routine': 'n.常规,惯例;adj.常规的,例行的;乏味的',
+    'muscle': 'n.肌肉,肌',
+    'aerobic': 'adj.有氧的;需氧的',
+    'jogging': 'n.慢跑锻炼',
+    'skiing': 'n.滑雪(运动)',
+    'pull-up': 'n.引体向上',
+    'bone': 'n.骨头,骨',
+    'gymnastics': 'n.体操,体操训练',
+    'tai chi': 'n.太极拳,太极',
+    'stretch': 'vt.&vi.伸展,舒展;拉长;伸出；（使）延伸',
+    'range': 'n.(变动或浮动的)范围,限制;区间;一系列',
+    'stick with': '持续,坚持',
+    'petrol': 'p.汽油',
+    'carbohydrate': 'n.碳水',
+    'energy': 'n.能。能量,精力;能源',
+    'protein': 'n.蛋白质',
+    'average': 'n.平均水平,一般水准adj.平均的;典型的',
+    'make up for': '弥补,补偿',
+    'sweat': 'n.汗水;vt.&vi.出汗,流汗',
+    'injury': 'n.伤害,损伤',
+    'prevent': 'vt.阻止,阻碍',
+    'tissue': 'n.(人、动植物细胞的)组织;(尤指用作手帕的)纸巾，手巾纸',
+    'lack': 'n.缺乏,匮乏,短缺;vt.&vi.没有,缺乏,不足,短缺',
+    'maintain': 'vt.维持;维修,保养',
+    'announce': 'vt. 宣布,宣告;通知',
+    'put the finishing touches to': '对⋯进行最后的润色或修饰',
+    'update': 'vt.使现代化,更新;向⋯提供最新信息; n.最新消息',
+    'in response to': '对⋯作出反应;作为对⋯',
+    'athlete': 'n. 运动员',
+    'boxing': 'n.拳击运动',
+    'champion': 'n.冠军,第一名',
+    'court': 'n.球场;法院,法庭;宫廷',
+    'under the weather': '略有不适,不舒服',
+    'plus': 'conj.而且,此外;prep.加;和',
+    'nearby': 'adj. 附近的,邻近的;adv.在附近,不远',
+    'gym': 'n.健身房,体育馆',
+    'partner': 'n.搭档,同伴;伙伴;',
+    'hesitate': 'vi.犹豫,迟疑',
+    'admit': 'vt. & vi.承认;招认;准许',
+    'inspire': 'vt.激励,鼓舞;启发思',
+    'explore': 'vt. & vi. 探究,探索;',
+    'crane': 'n.鹤',
+    'rooster': 'n.雄鸡',
+    'inspiration': 'n. 灵感;鼓舞人',
+    'nowadays': 'adv.现今,现在',
+    'master': 'n.大师,能手;主人vt.精通,掌握;控制',
+    'no wonder': '不足为奇,并不奇怪',
+    'imitate': 'vt.模仿;仿效',
+    'ache': 'vi. & n.疼痛,隐痛',
+    'satisfaction': 'n. 满意;满足,达到',
+    'root': 'vt.&vi.(使)生根;n.根，根茎；根源，起因',
+    'be rooted in': '起源于',
+    'philosophy': 'n.哲学',
+    'unity': 'n. 统一体,联合体,整体;团结一致，联合，统一',
+    'exist': 'vi.存在;生活,生存',
+    'backwards': '(backward)adv.向后；朝反方向',
+    'wedding': 'n. 婚礼，结婚庆典'
+            // 更多单词
+        };
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+    </script>
+</body>
+</html>
