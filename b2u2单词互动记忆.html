@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>英语单词互动记忆(B2U2)</title>
+    <title>英语单词互动记忆（B2U2）</title>
     <style>
         body { font-family: Arial, sans-serif; padding-top: 60px; }
         #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
@@ -40,10 +40,7 @@
 
     <script>
         var words = {
-           'crooked': 'adj. 弯曲的，不直的',
-    'arrow': 'n. 箭，矢；箭头，箭号',
-    'pea': 'n. 豌豆',
-    'soccer': 'n.〈美〉足球运动',
+              'soccer': 'n.〈美〉足球运动',
     'bat': 'n.蝙蝠;球棒,球板; vt.&vi.用球棒(板)击球',
     'skydiving': 'n.跳伞运动',
     'congratulation': 'n.祝贺,恭喜；贺诞；恭贺',
@@ -116,6 +113,8 @@
             // 更多单词
         };
 
+        var audioElement = new Audio();
+
         function createTable() {
             var table = document.getElementById('wordTable');
             var row, cell, english, chinese, index = 0;
@@ -131,6 +130,7 @@
                 cell.onclick = (function(e, c) {
                     return function() {
                         toggleWord(this, e, c);
+                        playYoudaoAudio(e);
                     };
                 })(english, chinese);
                 index++;
@@ -149,6 +149,13 @@
             }
         }
 
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
         function generateRandom() {
             var max = document.getElementById('maxStudents').value;
             var randomNumber = Math.floor(Math.random() * max) + 1;

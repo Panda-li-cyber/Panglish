@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>英语单词互动记忆(B2U4)</title>
+    <title>英语单词互动记忆（B2U4）</title>
     <style>
         body { font-family: Arial, sans-serif; padding-top: 60px; }
         #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
@@ -40,8 +40,7 @@
 
     <script>
         var words = {
-       '*sleeve ':' n. 袖子 ',
-'devote':' oneself to 致力，专心，献身(43)',
+         'devote':' oneself to 致力，专心，献身(43)',
 'earnest* ':' adj. 非常认真的；诚实的，真诚的(43)',
 'butterfly* ':' n. 蝴蝶(43)',
 'literature ':' n. 文学，文学作品(44)',
@@ -98,17 +97,15 @@
 'accomplish* ':' vt. 完成(53)',
 'noble ':' adj. 贵族的，高贵的；崇高的；宏伟的(54)',
 'confused ':' adj. 糊涂的，迷惑的；不清楚的，混乱的(54)',
-'clear up':' (头脑)清醒；使整洁，清理；天气放晴(54)',
-'be on the point of doing sth':'正要做某事(54)',
-'weave* ':' vi. & vt. (weaved，weaved)迂回行进，穿行.(wove，woven)编(54)',
-'mushy* ':' adj. 糊状的，软而稠的(54)',
-'flash ':' n. 闪光，闪现 vt. &vi. (使)闪光；(使)闪现(54)',
-'more':'更多',
-'more':'更多',
-'more':'更多',
-'more':'更多',
+'clear up':'清醒；清理；天气放晴',
+'be on the point of doing sth':'正要做某事',
+'weave':'（wove,woven）编；来回进行',
+'mushy':'糊状的',
+'flash':'n.&v.闪光；闪现'
             // 更多单词
         };
+
+        var audioElement = new Audio();
 
         function createTable() {
             var table = document.getElementById('wordTable');
@@ -125,6 +122,7 @@
                 cell.onclick = (function(e, c) {
                     return function() {
                         toggleWord(this, e, c);
+                        playYoudaoAudio(e);
                     };
                 })(english, chinese);
                 index++;
@@ -143,6 +141,13 @@
             }
         }
 
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
         function generateRandom() {
             var max = document.getElementById('maxStudents').value;
             var randomNumber = Math.floor(Math.random() * max) + 1;

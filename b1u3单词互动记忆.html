@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>英语单词互动记忆(B1U3)</title>
+    <title>英语单词互动记忆</title>
     <style>
         body { font-family: Arial, sans-serif; padding-top: 60px; }
         #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
@@ -40,7 +40,7 @@
 
     <script>
         var words = {
-           'on the rocks':' (关系)陷于困境，濒临崩溃(30)',
+             'on the rocks':' (关系)陷于困境，濒临崩溃(30)',
 'awkward ':' adj. 笨拙的；令人尬的；难对付的(30)',
 'sight ':' n. 视野；视力；看见(30)',
 'out of one’s sight':' 脱离某人的视线(30)',
@@ -107,10 +107,10 @@
 'indeed ':' adv. 其实，实际上；的确；真止地(39)',
 'well-meaning ':' adj. 出于好心的，善意的(39)',
 
-
-
             // 更多单词
         };
+
+        var audioElement = new Audio();
 
         function createTable() {
             var table = document.getElementById('wordTable');
@@ -127,6 +127,7 @@
                 cell.onclick = (function(e, c) {
                     return function() {
                         toggleWord(this, e, c);
+                        playYoudaoAudio(e);
                     };
                 })(english, chinese);
                 index++;
@@ -145,6 +146,13 @@
             }
         }
 
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
         function generateRandom() {
             var max = document.getElementById('maxStudents').value;
             var randomNumber = Math.floor(Math.random() * max) + 1;

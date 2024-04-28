@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>英语单词互动记忆(B3U2)</title>
+    <title>英语单词互动记忆（B3U2）</title>
     <style>
         body { font-family: Arial, sans-serif; padding-top: 60px; }
         #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
@@ -40,9 +40,7 @@
 
     <script>
         var words = {
-      'give rise to ':'使发生（或存在）(13)',
-'further ':' adj. 更多的，更进一步的 adv.较远，更远；进一步',
-'county ':' n. 郡，县 (16)',
+        'county ':' n. 郡，县 (16)',
 'injure ':' vt. 伤害，使受伤；损害 (16)',
 'disaster ':' n. 灾难，灾害；彻底失败 (16)',
 'at large ':'整个，全部(16)',
@@ -113,15 +111,10 @@
 'locate ':' vt. 找出…的准确位置；把…安置在（或建造于） (27)',
 'retire ':' vi. & vt. 退休，退役',
 
-'more':'更多',
-'more':'更多',
-'more':'更多',
-'more':'更多',
-'more':'更多',
-'more':'更多',
-'more':'更多',
             // 更多单词
         };
+
+        var audioElement = new Audio();
 
         function createTable() {
             var table = document.getElementById('wordTable');
@@ -138,6 +131,7 @@
                 cell.onclick = (function(e, c) {
                     return function() {
                         toggleWord(this, e, c);
+                        playYoudaoAudio(e);
                     };
                 })(english, chinese);
                 index++;
@@ -156,9 +150,16 @@
             }
         }
 
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
         function generateRandom() {
             var max = document.getElementById('maxStudents').value;
-            var randomNumber = Math.floor(Math.random() * max) + 2;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
             document.getElementById('randomNumber').value = randomNumber;
         }
 

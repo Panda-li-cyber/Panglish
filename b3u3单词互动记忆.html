@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>英语单词互动记忆(B3U3)</title>
+    <title>英语单词互动记忆（B3U3）</title>
     <style>
         body { font-family: Arial, sans-serif; padding-top: 60px; }
         #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
@@ -40,7 +40,7 @@
 
     <script>
         var words = {
-      'webcam':' n. 网络摄像头 (29)',
+        'webcam':' n. 网络摄像头 (29)',
 'pot':' n. 壶，瓶，罐；锅 (29)',
 'emoji ':' n. 表情符号 (29)',
 'comic ':' n. 连环漫画；喜剧演员 adj.滑稽的；喜剧的 (29)',
@@ -105,16 +105,11 @@
 'badminton ':' n. 羽毛球运动(40)',
 'cut back on':'减少',
 'cut back on':'减少',
-'cut back on':'减少',
-'more':'更多',
-'more':'更多',
-'more':'更多',
-'more':'更多',
-'more':'更多',
-'more':'更多',
-'more':'更多',
+
             // 更多单词
         };
+
+        var audioElement = new Audio();
 
         function createTable() {
             var table = document.getElementById('wordTable');
@@ -131,6 +126,7 @@
                 cell.onclick = (function(e, c) {
                     return function() {
                         toggleWord(this, e, c);
+                        playYoudaoAudio(e);
                     };
                 })(english, chinese);
                 index++;
@@ -149,9 +145,16 @@
             }
         }
 
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
         function generateRandom() {
             var max = document.getElementById('maxStudents').value;
-            var randomNumber = Math.floor(Math.random() * max) + 2;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
             document.getElementById('randomNumber').value = randomNumber;
         }
 

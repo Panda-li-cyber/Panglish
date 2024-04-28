@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
@@ -106,13 +106,10 @@
 'attract ':' vt. 吸引，使喜爱；招引；引起（反应）',
 'rugby ':' n. 橄榄球运动',
 'calligraphy':'n. 书法，书法艺术',
-
-
-
-// 更多单词
+            // 更多单词
         };
 
-        var synth = window.speechSynthesis;
+        var audioElement = new Audio();
 
         function createTable() {
             var table = document.getElementById('wordTable');
@@ -129,7 +126,7 @@
                 cell.onclick = (function(e, c) {
                     return function() {
                         toggleWord(this, e, c);
-                        speakWord(e);
+                        playYoudaoAudio(e);
                     };
                 })(english, chinese);
                 index++;
@@ -148,11 +145,13 @@
             }
         }
 
-        function speakWord(word) {
-            var utterThis = new SpeechSynthesisUtterance(word);
-            synth.speak(utterThis);
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
         }
-
+        
         function generateRandom() {
             var max = document.getElementById('maxStudents').value;
             var randomNumber = Math.floor(Math.random() * max) + 1;

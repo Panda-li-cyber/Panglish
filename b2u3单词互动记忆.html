@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>英语单词互动记忆(B2U3)</title>
+    <title>英语单词互动记忆（B2U3）</title>
     <style>
         body { font-family: Arial, sans-serif; padding-top: 60px; }
         #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
@@ -40,7 +40,7 @@
 
     <script>
         var words = {
-         'wedding': 'n. 婚礼，结婚庆典',
+             'wedding': 'n. 婚礼，结婚庆典',
     'ceremony': 'n. 典礼，仪式',
     'decorate': 'vt. & vi. 装饰；点缀；粉刷，油漆',
     'formal': 'adj. （穿着、言语、行为等）适合正式场合的，正规的，庄重的',
@@ -125,6 +125,8 @@
             // 更多单词
         };
 
+        var audioElement = new Audio();
+
         function createTable() {
             var table = document.getElementById('wordTable');
             var row, cell, english, chinese, index = 0;
@@ -140,6 +142,7 @@
                 cell.onclick = (function(e, c) {
                     return function() {
                         toggleWord(this, e, c);
+                        playYoudaoAudio(e);
                     };
                 })(english, chinese);
                 index++;
@@ -158,6 +161,13 @@
             }
         }
 
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
         function generateRandom() {
             var max = document.getElementById('maxStudents').value;
             var randomNumber = Math.floor(Math.random() * max) + 1;

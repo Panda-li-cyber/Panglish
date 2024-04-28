@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>英语单词互动记忆(B1U4)</title>
+    <title>英语单词互动记忆</title>
     <style>
         body { font-family: Arial, sans-serif; padding-top: 60px; }
         #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
@@ -40,7 +40,7 @@
 
     <script>
         var words = {
-         'skip ':' vt. 不做(应做的事情等)；跳过 vi.蹦蹦跳跳地走；略过(43)',
+             'skip ':' vt. 不做(应做的事情等)；跳过 vi.蹦蹦跳跳地走；略过(43)',
 'yogurt ':' n. 酸奶(43)',
 '*faint ':' vi. 昏厥 adj.快要昏厥的；微弱的；可能性不大的(44)',
 'pass out':'昏迷，失去知觉(44)',
@@ -109,11 +109,10 @@
 'achievement ':' n. 成就，成绩；达到，完成(54)',
 'app ':' n. 应用程序，应用软件(application的缩写) (55)',
 
-
-
-
             // 更多单词
         };
+
+        var audioElement = new Audio();
 
         function createTable() {
             var table = document.getElementById('wordTable');
@@ -130,6 +129,7 @@
                 cell.onclick = (function(e, c) {
                     return function() {
                         toggleWord(this, e, c);
+                        playYoudaoAudio(e);
                     };
                 })(english, chinese);
                 index++;
@@ -148,6 +148,13 @@
             }
         }
 
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
         function generateRandom() {
             var max = document.getElementById('maxStudents').value;
             var randomNumber = Math.floor(Math.random() * max) + 1;

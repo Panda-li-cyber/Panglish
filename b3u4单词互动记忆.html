@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>英语单词互动记忆(B3U4)</title>
+    <title>英语单词互动记忆（B3U4）</title>
     <style>
         body { font-family: Arial, sans-serif; padding-top: 60px; }
         #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
@@ -40,7 +40,7 @@
 
     <script>
         var words = {
-      'republic ':' n. 共和国，共和政体 (44)',
+         'republic ':' n. 共和国，共和政体 (44)',
 'malaria ':' n. 疟疾 (44)',
 'deadly ':' adj.致命的；十足的，彻底的(44)',
 'survival ':' n. 生存，存活；残存物，幸存事物 (44)',
@@ -113,15 +113,10 @@
 'publish ':' vt. 出版，发行；发表；公布 (55)',
 'marriage ':' n.结婚，婚姻；已婚状态 (55)',
 
-'more':'更多',
-'more':'更多',
-'more':'更多',
-'more':'更多',
-'more':'更多',
-'more':'更多',
-'more':'更多',
             // 更多单词
         };
+
+        var audioElement = new Audio();
 
         function createTable() {
             var table = document.getElementById('wordTable');
@@ -138,6 +133,7 @@
                 cell.onclick = (function(e, c) {
                     return function() {
                         toggleWord(this, e, c);
+                        playYoudaoAudio(e);
                     };
                 })(english, chinese);
                 index++;
@@ -156,9 +152,16 @@
             }
         }
 
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
         function generateRandom() {
             var max = document.getElementById('maxStudents').value;
-            var randomNumber = Math.floor(Math.random() * max) + 2;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
             document.getElementById('randomNumber').value = randomNumber;
         }
 

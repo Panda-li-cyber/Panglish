@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆（X1U1）</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（X1U1）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+        'mood ':' n. 情绪，心情，气氛，氛围(2)',
+'combination ':' n. 结合体，联合体，联合，混合(2)',
+'do the trick':'奏效，起作用，达到目的(2)',
+'creamy ':' adj. 含奶油的；像奶油的，光滑细腻的；淡黄色的(2)',
+'flavour ':' (AmE flavor) n. 味，味道；特点，特色. vt.给…调味，加味于(2)',
+'greedily ':' adv. 贪婪地，贪心地(2)',
+'gently ':' adv. 轻柔地，温和地(2)',
+'dessert ':' n. (饭后)甜点，甜食(2)',
+'association ':' n. 联想，联系；协会，社团；联合，交往',
+'vary ':' vi. (根据情况)变化，变更；相异，不同. vt.变更，改变(2)',
+'link ':' vt.联系，相关联；把…连接起来. n. 联系，连接；关系，纽带；链接(3)',
+'emotion ':' n. 情感，强烈的感情，激情，情绪(3)',
+'saucer ':' n. 碟状物，茶碟，茶托(3)',
+'vinegar ':' n. 醋*(3)',
+'native ':' n. 出生于某国(或某地)的人；本地人. adj. 出生地的；本地的；土著的；土产的(3)',
+'salty ':' adj. 成的，含盐的(3)',
+'sour ':' adj. 酸的，有酸味的；馊的. vi. &vt. (使)变坏，变味，酸腐(3)',
+'cry out for':'迫切需要(3)',
+'relieve ':' vt.解除，减轻；缓和，缓解(3)',
+'bond ':' n. 纽带，联系；连接，结合(3)',
+'security ':' n. 安全；保护措施；保安部门；担保，保证(5)',
+'generate ':' vt.产生，引起(5)',
+'calorie ':' n. 卡，卡路里；千卡(5)',
+'digest ':' vt.& vi. ',
+'lower ':' vt.降低，减少；把…放低，使…降下. adj. 下面的；在底部的；低洼的(5)',
+'cycle ':' n. 循环；自行车，摩托车. vi. 骑自行车(5)',
+'enhance ':' vt.提高，增强(6)',
+'throw oneself into':'投身于，热衷于(6)',
+'boil ':' vt.& vi. 用沸水煮；(使)沸腾(6)',
+'fry ':' vt.& vi. 油炸，油煎(6)',
+'steak ':' n. 牛排；肉排，肉块(6)',
+'pan ':' n. 平锅，平底锅(6)',
+'impress ':' vt.& vi. 使钦佩，给…留下深刻印象，使意识到(7)',
+'buffet ':' n. 自助餐',
+'bay ':' n. (海或湖的)湾(7)',
+'scenery ':' n. 风景，景色；舞台布景(7)',
+'bet ':' n. 打赌，赌注；预计，估计. vi. &vt. (bet，bet)下赌注，打赌；敢说(7)',
+'atmosphere ':' n. 气氛，氛围；大气；气体；空气(7)',
+'out of this world':'好(或美等)得不得了，非凡，呱呱叫(9)',
+'version ':' n. 变体，变种；说法；版本(9)',
+'filling ':' n. (糕点等的)馅(9)',
+'elderly ':' adj. 年纪较大的，上了年纪的(9)',
+'bake ':' vt.& vi. 烘烤；烤硬(9)',
+'flour ':' n. 面粉(9)',
+'adorable ':' adj. 可爱的，讨人喜爱的(9)',
+'mild ':' adj. 不浓的，淡味的；暖和的；温和的，不严重的(9)',
+'tiramisu ':' n. 提拉米苏* (9)',
+'bakery ':' n. 面包(糕饼)店(9)',
+'layer ':' n. 层，层次，表层',
+'cheese ':' n. 干酪，奶酪(9)',
+'bitter ':' adj. 味苦的；激烈的；令人难过的；严寒的(9)',
+'cream ':' n. 奶油，乳脂；护肤霜(9)',
+'ingredient ':' n. 材料，成分；因素，要素* (9)',
+'loose ':' adj. 不受约束的；未固定牢的；零散的；宽松的；疏松的(11)',
+'let sth loose':'释放；放任(11)',
+'chilli ':' n. (AmE chili)辣椒* (11)',
+'pepper ':' n. 甜椒；胡椒粉(11)',
+'Sichuan pepper':' 花椒(11)',
+'onion ':' n. 洋葱，葱头(11)',
+'spring onion':'小葱，香葱(11)',
+'damp ':' adj. 潮湿的，湿气重的(11)',
+'foggy ':' adj. 有雾的，雾茫茫的(11)',
+'dynasty ':' n. 朝，代；王朝(11)',
+'expand ':' vt.& vi. 增加，扩大；扩展，发展(业务)；详谈，详述(11)',
+'multiple ':' adj. 数量多的，多样的(11)',
+'sauce ':' n. 调味汁，酱* (11)',
+'plain ':' adj. 朴素的，简单的；清楚的. n. 平原(11)',
+'slice ':' n. 薄片，片；部分，份额. vt.把…切成片；切开，割破(11)',
+'chef ':' n. 主厨，厨师(12)',
+'property ':' n. 性质，特性；所有物，财产；不动产(12)',
+'appropriate ':' adj. 合适的(12)',
+'estimate ':' vt.估计，估价. n. ',
+'consume ':' vt.吃，喝，饮；消耗，耗费(尤指燃料、能量或时间)(12)',
+'hit the spot':'使人满意，正合需要(12)',
+'Cantonese ':' adj. 广东人(或文化)的，粤语的. n. (pl Cantonese)广东人；粤语* (12)',
+'dim sum ':' n. 点心* (12)',
+'essential ':' adj. 必不可少的；本质的，基本的(12)',
+'innovation ':' n. 创造，创新；新思想，新方法(12)',
+'concept ':' n. 概念，观念(12)',
+'stimulate ':' vt.促进，激发；刺激，使兴奋(12)',
+'appetite ':' n. 食欲，胃口；强烈欲望(12)',
+'delicate ':' adj. 精致的，精细的，精密的；易损的，易碎的，脆弱的(12)',
+'emphasis ':' n. (pl emphases',
+'steam ':' vt.& vi. 蒸，散发蒸汽. n. 水蒸气；蒸汽动力；水汽(12)',
+'gram ':' n. 克(13)',
+'cabbage ':' n. 甘蓝，卷心菜(13)',
+'wrapper ':' n. (食品等的)包装材料，包装纸(13)',
+'mixture ':' n. 混合物；混合，结合(13)',
+'edge ':' n. 边，边缘；刀口(13)',
+'apart ':' adv. 成碎片；分开；相隔(13)',
+'fall apart':'破碎，破裂；崩溃(13)',
+
+            // 更多单词
+        };
+
+        var audioElement = new Audio();
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+    </script>
+</body>
+</html>

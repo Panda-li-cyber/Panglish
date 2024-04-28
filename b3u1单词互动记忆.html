@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>英语单词互动记忆(B3U1)</title>
+    <title>英语单词互动记忆（B3U1）</title>
     <style>
         body { font-family: Arial, sans-serif; padding-top: 60px; }
         #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
@@ -40,7 +40,7 @@
 
     <script>
         var words = {
-      'harm ':' n. & vt. 伤害，损害 (1)',
+         'harm ':' n. & vt. 伤害，损害 (1)',
 'soil ':' n. 土壤；国土，领土，土地 (1)',
 'ecosystem ':' n. 生态系统 (2)',
 'overseas ':' adj. 海外的，国外的 adv.向（在）海外，向（在）国外 (2)',
@@ -129,15 +129,11 @@
 'consequence ':' n. 结果，后果；重要性 (13)',
 'give rise to ':'使发生（或存在）(13)',
 'further ':' adj. 更多的，更进一步的 adv.较远，更远；进一步',
-'more':'更多',
-'more':'更多',
-'more':'更多',
-'more':'更多',
-'more':'更多',
-'more':'更多',
-'more':'更多',
+
             // 更多单词
         };
+
+        var audioElement = new Audio();
 
         function createTable() {
             var table = document.getElementById('wordTable');
@@ -154,6 +150,7 @@
                 cell.onclick = (function(e, c) {
                     return function() {
                         toggleWord(this, e, c);
+                        playYoudaoAudio(e);
                     };
                 })(english, chinese);
                 index++;
@@ -172,9 +169,16 @@
             }
         }
 
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
         function generateRandom() {
             var max = document.getElementById('maxStudents').value;
-            var randomNumber = Math.floor(Math.random() * max) + 2;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
             document.getElementById('randomNumber').value = randomNumber;
         }
 
