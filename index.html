@@ -15,9 +15,9 @@
             background-color: #004d00;
             color: #FFF;
         }
-        h1 {
+        h1, h2 {
             color: #FFF;
-            margin-top: 40px;
+            margin-top: 20px;
             text-align: center;
         }
         table {
@@ -39,14 +39,23 @@
         }
         footer {
             text-align: center;
-            margin-top: auto;
-            padding: 20px 0;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
             background-color: #004d00;
+            color: #FFF;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+        }
+        .visit-count {
+            margin-left: 20px;
         }
     </style>
 </head>
 <body>
     <h1>欢迎来到熊猫李English工作室</h1>
+    <h2>译林高中英语同步词汇翻翻看</h2>
     <p>请选择您要记忆的单元（目前译林版）:</p>
     <table>
         <tr>
@@ -93,7 +102,18 @@
         </tr>
     </table>
     <footer>
-        <p>湖南省临武县第一中学| 熊猫李English工作室</p>
+        <p>湖南省临武县第一中学| 熊猫李English工作室<span class="visit-count"> | 网页阅读总数: <span id="visitCount">0</span></span></p>
     </footer>
+
+    <script>
+        // Example of incrementing the visit count on page load
+        document.addEventListener("DOMContentLoaded", function() {
+            var countDisplay = document.getElementById('visitCount');
+            var count = localStorage.getItem('pageVisitCount');
+            count = count ? parseInt(count) + 1 : 1;
+            localStorage.setItem('pageVisitCount', count);
+            countDisplay.textContent = count;
+        });
+    </script>
 </body>
 </html>
