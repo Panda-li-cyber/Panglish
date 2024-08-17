@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆（X2U3）</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（X2U3）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+        "surgeon":" n. 外科医生(29)",
+"physician":" n. 医师，内科医生(29)",
+"chemist":" n. 药剂师，药商；化学家 (29)",
+"dentist":" n. 牙科医生(29)",
+"specialize":" vi.专门研究（或从事），专攻(29)",
+"*gene":" n. 基因(30)",
+"game-changing":" adj. 改变游戏规则的（指彻底改变事态发展的） (30)",
+"*genome":" n. 基因组，染色体组 (30)",
+"cell":" n. 细胞(30)",
+"being":" n. 生物；存在；身心(30)",
+"*lifespan":" n. 寿命，有效期(30)",
+"affect":" vt. 影响；侵袭，使感染；深深打动(30)",
+"contract":" vt. 感染疾病；与…订立合同（或契约）；（使）收缩 n. 合同，合约(30)",
+"virus":" n. 病毒；（计算机程序中的）病毒(30)",
+"cancer":" n. 癌症；邪恶，毒瘤(30)",
+"identify":" vt. 找到，发现；确认，认出；显示，说明身份(30)",
+"relate":" vi. & vt. 联系，使有联系；叙述，讲述(30)",
+"means":" n. (pl. means) 方法，方式；财富，钱财(30)",
+"delete":" vt. 删去，删除(30)",
+"restore":" vt. 恢复；修复；使复原，使复位(31)",
+"ultimately":" adv. 最终；根本上 (31)",
+"abnormal":" adj. 反常的，畸形的 (31)",
+"weapon":" n. 武器，手段；兵器(31)",
+"fundamental":" adj. 十分重大的，根本的；基础的，基本的n.基本规律，根本法则，基础(31)",
+"pace":" n. 发生的速度，节奏；步速；快节奏vi. & vt. 来回踱步，走来走去；确定速度，调整节奏(31)",
+"arise":" vi. (arose, arisen) 发生，出现；（由…）引起，（因…）产生(31)",
+"restrict":" vt. 限制，限定；束缚，妨碍；约束，管束(31)",
+"prohibit":" vt. （尤指以法令）禁止；使不可能(31)",
+"prohibit sb from doing sth":" 禁止某人做某事(31)",
+"resistance":" n. 抵抗力；抵制，反对；抵抗，反抗(31)",
+"flu":" n. 流行性感冒，流感(31)",
+"characteristic":" n. 特征，特点adj.典型的，独特的(31)",
+"wrestle":" vi. & vt. 奋力对付，努力处理；摔跤(31)",
+"wrestle with":" 努力处理，全力解决(31)",
+"put sth in place":" 准备就绪(31)",
+"debate":" vt. & vi. 讨论，辩论；仔细考虑，思考n.讨论，争论；辩论(31)",
+"without doubt":" 毫无疑问，的确(31)",
+"finding":" n. 调查发现，调研结果 (33)",
+"ripe":" adj. 成熟的；时机成熟的(33)",
+" a ripe old age":" 高龄(33)",
+"withdraw":" vi. & vt. (withdrew,withdrawn) 脱离（社会），不与人交往；（使）撤离；（使）退出；停止提供(34)",
+"equip":" vt. 配备；使有能力(34)",
+"artificial":" adj. 人工的，人造的；人为的；虚假的(34)",
+"*limb":" n. 肢，臂，腿(34)",
+"rubber":" n. 橡胶；橡皮(34)",
+"outgoing":" adj. 外向的(34)",
+"grateful":" adj. 感激的，表示感谢的 (34)",
+"disabled":" adj. 有残疾的，丧失能力的(35)",
+"disability":" n. 缺陷，障碍(35)",
+"conventional":" adj. 传统的，习惯的；依照惯例的，遵循习俗的(35)",
+"leather":" n. 皮革(35)",
+"sensory":" adj. 感觉的，感官的(35)",
+"patent":" n. 专利，专利证书 adj. 有专利的，受专利保护的 (35)",
+"fuel":" vt. 增加，刺激；给…提供燃料n.燃料(37)",
+"disturb":" vt. 使不安；打扰；搅乱 (37)",
+"tackle":" vt. 应付，处理，解决(37)",
+"head-on":" adv. 积极地，果断地；正面相撞地adj.迎头相撞的；正面反对的(37)",
+"go to great lengths to do sth":" 竭尽全力做某事，不遗余力做某事(37)",
+"adjust":" vt. & vi. 调整，调节；适应，习惯；整理(37)",
+"centimetre":" n. (AmEcentimeter) 厘米(37)",
+"*acupuncture":" n. 针刺疗法(39)",
+"needle":" n. 针；注射针；指针(39)",
+"evidence":" n. 证据，证明；物证，人证vt.证明，表明(39)",
+"date back to":" 追溯到，始于，自…至今(39)",
+"solid":" adj. 实心的；固体的；结实的；纯色的(39)",
+"switch":" vi. & vt. 转变；交换；调班n.开关，闸；转变，改变(39)",
+"*stainless":" adj. 不生锈的(39)",
+"steel":" n. 钢；钢铁工业(39)",
+"millimetre":" n. (AmEmillimeter) 毫米(39)",
+"clinic":" n. 私人诊所；门诊部；门诊时间(39)",
+"examine":" vt. 检查，检验；审查，调查；考，测试；审问(39)",
+"*tongue":" n. 舌头；语言(39)",
+"*pulse":" n. 脉搏vi.搏动，跳动；洋溢着(39)",
+"wrist":" n. 手腕，腕关节(39)",
+"organ":" n. 器官；风琴；机构，机关 (39)",
+"severe":" adj. 十分严重的，极为恶劣的；严厉的；艰难的(40)",
+"anxiety":" n. 焦虑；担心；渴望 (40)",
+"abuse":" vt. 滥用；虐待；辱骂 n. 滥用；虐待；辱骂(40)",
+"alcohol":" n. 酒精，酒(40)",
+"drug":" n. 毒品；药物(40)",
+"tobacco":" n. 烟草(40)",
+"phenomenon":" n. (pl.phenomena) 现象(40)",
+"substance":" n. 物质；要点(40)",
+"symbol":" n. 象征；符号，代号(40)",
+"widespread":" adj. 分布广的，普遍的，广泛的(40)",
+"*bandage":" n. 绷带(41)",
+"infection":" n. 传染，感染(41)",
+
+
+
+
+            // 更多单词
+        };
+
+        var audioElement = new Audio();
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+   
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                
+                index++;
+            }
+
+            
+        }
+ </script>
+
+</body>
+</html>

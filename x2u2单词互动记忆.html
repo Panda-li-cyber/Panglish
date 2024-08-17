@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆（X2U2）</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（X2U2）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+        "solidarity":" n. 团结，齐心协力(16)",
+"*BCE":" abbr. 公元前(16)",
+"participate":" vi. 参加，参与(16)",
+"compete":" vi. 参加比赛；竞争(16)",
+"racial":" adj. 种族的；种族间的(16)",
+"diverse":" adj. 多种多样的，不同的 (16)",
+"joint":" adj. 联合的，共同的n.关节；接合处(16)",
+"motivate":" vt. 激励，激发；成为…的动机，是…的原因(16)",
+"*motto":" n. (pl. mottoes, mottos)格言，座右铭(16)",
+"boundary":" n. 边界，分界线(16)",
+"demonstrate":" vt. 表现，表露；证实，证明；示范，演示vi.游行示威(17)",
+"afterwards":" adv. 以后，后来(17)",
+"proceed":" vi. 接着做，继而做；继续从事（或进行）；行进，前往(17)",
+"*flame":" n. 火焰，火舌(17)",
+"applaud":" vt. & vi. 称赞，赞许；鼓掌(17)",
+"track and field ":"田径运动(17)",
+"consistent":" adj. 一致的，始终如一的；连续的(17)",
+"call on sb to do sth":" 正式邀请某人做某事；请求某人做某事(17)",
+"humanity":" n. （统称）人，人类；人性；人道，仁慈(17)",
+"rank":" vi. & vt. 属于某等级，把…分等级；排列，使排成行n.地位，级别；等级；排，列；军衔(17)",
+"trend":" n. 趋势，趋向(17)",
+"*hurdle":" n. (hurdles) 跨栏赛；栏架；障碍(17)",
+"election":" n. 选举，推选；当选(17)",
+"*advent":" n. （重要事件、人物等的）到来，出现(17)",
+"faith":" n. 信心；宗教信仰(17)",
+"ambition":" n. 追求的目标，夙愿；野心，雄心，壮志(17)",
+"*ascend":" vi. & vt. 上升，升高，登高 (17)",
+"identical":" adj. 完全同样的(19)",
+"fellow":" adj. 同伴的，同情况的，同类的n.同辈，同类；男人，家伙(19)",
+"relay":" n. 接力赛vt.转发（信息、消息等）；播放，转播 (19)",
+"chest":" n. 胸部；大箱子(20)",
+"cheek":" n. 面颊，脸颊(20)",
+"half-marathon":" n. 半程马拉松赛跑(20)",
+"amateur":" n. 业余运动员，业余爱好者；生手，外行adj.业余的(20)",
+"ankle":" n. 踝，踝关节(20)",
+"gradually":" adv. 逐渐地，逐步地 (20)",
+"session":" n. 一段时间，一场；会议，开庭；学年(20)",
+"limit":" n. 限度，限制；极限，限量；界限vt.限制，限定；限量，减量(20)",
+"marathon":" n. 马拉松赛跑；马拉松式的活动（或工作）(20)",
+"chairman":" n. （委员会的）委员长，主席；（会议的）主席，主持人(21)",
+"constitution":" n. 体质，身体素质；宪法，章程(21)",
+"pour":" vt. & vi. 倒，斟；倾倒，倒出；涌流，倾泻；下大雨(21)",
+"walk on air":" 欢天喜地，得意扬扬(23)",
+"keep sth in perspective":" 正确客观地看待 (23)",
+"celebrity":" n. 名人；名望(23)",
+"opponent":" n. 对手，竞争者；反对者(23)",
+"*humility":" n. 谦逊，谦虚(23)",
+"*grace":" n. 高雅，文雅；优美；风度，体面 (23)",
+"dignity":" n. 尊严；自尊；高贵(23)",
+"*bobsleigh":" n. 大雪橇（供两人或两人以上比赛用）(23)",
+"unselfish":" adj. 无私的，忘我的 (23)",
+"idiom":" n. 习语，成语(25)",
+"find one’s way into":" 偶然来到，无意中处于 (25)",
+"league":" n. 联赛；等级，级别(25)",
+"opposing":" adj. 对抗的；相反的 (25)",
+"net":" n. (the net) 球网；网，网状物(25)",
+"move the goa lposts":" 改变条件（或规则） (25)",
+"insurance":" n. 保险业；保险；保险费(25)",
+"salesman":" n. 售货员，推销员 (25)",
+"complain":" vi. & vt. 抱怨，投诉 (25)",
+"score an own goal":" 进乌龙球；无意中做对自己不利的事(25)",
+"unintentionally":" adv. 无意地，非故意地(25)",
+"council":" n. 政务委员会，地方议会；市政服务机构；委员会(26)",
+"backfire":" vi. 产生事与愿违的不良（或危险）后果(26)",
+"ball park":" n. 棒球场；变动范围 (26)",
+"in the ballpark":" 差不多(26)",
+"a ball park estimate":" 大致的估计(26)",
+"venue":" n. 活动场地(26)",
+"*curveball":" n. 曲线球(26)",
+"throw sb a curve ball":" 给某人出难题 (26)",
+"handle":" vt. 处理，应付；控制，操纵n.把手，拉手；柄(26)",
+"three strikes and you are out":" 三振出局 (26)",
+"fist":" n. 拳，拳头(26)",
+"waist":" n. 腰，腰部；（衣服的）腰部 (26)",
+"below the belt":" 不公正的，伤人的(26)",
+"cruel":" adj. 刻毒伤人的，残酷的 (26)",
+"remark":" n. 谈论，言论vi. & vt. 说起，评论(26)",
+"towel":" n. 毛巾，抹布，纸巾(26)",
+"throw in the towel ":"认输，承认失败 (26)",
+"literally":" adv. 真正地，确实地；按字面，字面上(26)",
+"iron":" n. 铁；熨斗(27)",
+
+
+
+            // 更多单词
+        };
+
+        var audioElement = new Audio();
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+   
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                
+                index++;
+            }
+
+            
+        }
+ </script>
+
+</body>
+</html>

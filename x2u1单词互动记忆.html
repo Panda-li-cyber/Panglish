@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆（X2U1）</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（X2U1）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+        "critical":" adj. 批评的，批判性的；关键的；危急的(2)",
+"trap":" vt. 使落入险境；卡住，绊住n.陷阱，罗网；圈套；困境，牢笼 (2)",
+"release":" vt. 发布；释放；松开；发泄n.释放；发行；排放，泄漏 (2)",
+"ambulance":" n. 救护车(2)",
+"extend":" vi. & vt. 延伸（距离）；扩大；延长；伸展(2)",
+"construction":" n. 建筑，建造；建造物(2)",
+"dozen":" n. 许多；（一）打；十来个(2)",
+"dozens of ":"很多，许多(2)",
+"minor":" adj. 轻微的，次要的(2)",
+"bath":" n. 洗澡，洗浴；浴缸，浴盆(2)",
+"scream":" vi. & vt. 尖叫；高声喊；发出大而尖的声音n.尖叫，尖锐刺耳的声音(2)",
+"bark":" vi. （狗）吠叫vt.厉声发令n.（狗）吠声；短促响亮的人声；树皮 (2)",
+"choke":" vt. & vi. （使）窒息；（使）哽咽，（尤指感情激动而）说不出话来(2)",
+"department":" n. 部门，局，系 (2)",
+"cigarette":" n. 香烟(2)",
+"carpet":" n. 地毯；覆盖地面的一层厚东西(2)",
+"automatic":" adj. 自动的；无意识的，不假思索的(2)",
+"investigate":" vt. & vi. 侦查，调查；研究(2)",
+"come about":" 发生(3)",
+"journalist":" n. 新闻记者，新闻工作者(3)",
+"priority":" n. 优先事项，首要事情；优先权，重点(3)",
+"contradict":" vt. 相矛盾，相反；反驳，驳斥(3)",
+"factual":" adj. 事实的，真实的(3)",
+"instance":" n. 例子，事例(3)",
+"for instance":" 例如，比如(3)",
+"differ":" vi. 相异；意见相左(3)",
+"conclusion":" n. 结论，推论；结束，结果；签订，达成(3)",
+"FALSE":" adj.错误的，不真实的；非天生的；假的，伪造的；不真诚的(3)",
+"bringsth to light ":"揭露，披露(3)",
+"minimum":" n. 最小值，最少量adj.最低的，最小的 (3)",
+"maximum":" n. 最大量，最大限度adj.最高的，最多的 (3)",
+"sum":" vt. 总结，概括n.金额，款项；总和，总数；全部 (3)",
+"sum up ":"总结，概括(3)",
+"accurate":" adj. 正确无误的；精确的 (3)",
+"committed":" adj. 尽心尽力的；承诺过的(3)",
+"be committed to":" 致力于；承诺过(3)",
+"discrimination":" n. 辨别力，识别力；歧视，区别对待",
+"curiosity":" n. 好奇心，求知欲；奇物，珍品(5)",
+"journalism":" n. 新闻业，新闻工作(5)",
+"commitment":" n. 献身，投入；承诺，许诺；花费(5)",
+"citizen":" n. 公民；市民，居民(6)",
+"found":" vt. 创建，创办；建立，兴建 (6)",
+"politics ":"n. 政治，政治事务；（个人的）政治观点，政见(6)",
+"accuse":" vt. 谴责，控诉(6)tax ",
+"mount":" vi. 逐步增加vt.攀登，爬上n.山(6)",
+"mount up":" （尺寸和数量上）增加，上升 (6)",
+"*elevation":" n. 提高；提升；海拔 (6)",
+"profession":" n. 行业，职业；同行；宣称，声明(6)",
+"drama":" n. 戏剧；戏剧性事件(7)",
+"scholarship":" n. 奖学金；学术(7)",
+"category":" n. 类别，种类(7)",
+"nevertheless":" adv. 尽管如此(7)",
+"witness":" vt. & vi. 是发生…的时间（或地点），见证；目击；作证；是…的迹象n.目击者，见证人；证人 (8)",
+"edition":" n. 版本；一份，一期；版次 (8)",
+"platform":" n. 平台；站台，月台；讲台，舞台(8)",
+"spring up":" 迅速出现，突然兴起(8)",
+"interaction":" n. 互动；互相作用 (8)",
+"membership":" n. （统称）会员，会员人数；会员资格(8)",
+"chart":" n. 图表；海图；（the charts）排行榜(8)",
+"broadcast":" n. 广播节目，电视节目vi. & vt.(broadcast, broadcast) 播送，广播；散布，传播(8)",
+"advertising":" n. 广告活动，广告业(11)",
+"persuasion":" n. 说服，劝说；信仰 (11)",
+"persuade":" vt. 说服；使信服(11)",
+"advertisement":" n. (informal ad) 广告，启事；广告活动，广告宣传 (11)",
+"channel":" n. 途径，渠道；电视台；频道；方法；水渠(11)",
+"peak":" adj. 高峰时期的，最高度的n.顶峰，高峰；山峰；尖端vi.达到高峰，达到最高值(11)",
+"advertise":" vt. & vi. 做广告，登广告；公布，征聘；展现，宣传(11)",
+"boost":" vt. 使增长，使兴旺n.增长，提高；帮助，激励(11)",
+"psychology":" n. 心理，心理特征；心理学(11)",
+"purchase":" vt. 买，购买n.购买，采购；购买的东西，购买项目 (11)",
+"memorable":" adj. 难忘的，值得纪念的(11)",
+"*slogan":" n. 标语，口号(11)",
+"teapot":" n. 茶壶(11)",
+"get across":" 被传达，被理解，把…讲清楚 (12)",
+"*brand":" n. 品牌；类型；烙印(12)",
+"*ambassador":" n. 大使，代表(12)",
+"placement":" n. 放置；安置(12)",
+"rating":" n. 收视率；等级，级别(12)",
+"sponsor":" vt. 赞助；主办；为慈善活动捐款；资助n.赞助商；为慈善活动捐款的人(12)",
+"absorb":" vt. 理解，掌握；吸收；吸引全部注意力(12)",
+"discount":" n. 折扣vt.打折出售(12)",
+"tailor":" vt. 专门制作，定做n.裁缝(12)",
+"brighten up":" （使）增添乐趣；（使）明亮(13)",
+"housing":" n. 住房，住宅(13)",
+"estate":" n. 住宅区；（通常指农村的）大片私有土地；个人财产，（尤指）遗产 (13)",
+"housing estate":" 住宅区，住宅群(13)",
+"amuse":" vt. （提供）消遣；逗笑(13)",
+
+
+            // 更多单词
+        };
+
+        var audioElement = new Audio();
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+   
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                
+                index++;
+            }
+
+            
+        }
+ </script>
+
+</body>
+</html>

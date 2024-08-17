@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆（X4U3）</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（X4U3）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+"salary":"n. 薪金，薪水",
+"labour":"n. 劳工，劳动；vi. 努力做",
+"gear":"vt. 使适合于；n. 排挡，齿轮",
+"earn a living":"谋生",
+"attain":"vt. 获得；达到",
+"endeavour":"vi. 努力；n. 努力，尝试",
+"passion":"n. 酷爱；强烈情感",
+"fond":"adj. 喜爱",
+"anticipate":"vt. 预料；预计",
+"status quo":"现状；原来的状况",
+"superior":"adj. 更好的；n. 级别更高的人",
+"prejudice":"n. 偏见",
+"lawyer":"n. 律师",
+"servant":"n. 雇员；仆人",
+"consultant":"n. 顾问",
+"clerk":"n. 职员",
+"receptionist":"n. 接待员",
+"respective":"adj. 分别的；各自的",
+"zone":"n. 地区",
+"operate":"vt. 操作；vi. 运转",
+"hire":"vt. & vi. 聘用；n. 新雇员",
+"leadership":"n. 领导地位",
+"weigh up":"权衡；斟酌",
+"receipt":"n. 收入；收据",
+"commercial":"adj. 商业的",
+"weekly":"adj. 每周的",
+"monthly":"adj. 每月的",
+"budget":"n. 预算",
+"loan":"n. 贷款；vt. 借出",
+"client":"n. 客户",
+"detective":"n. 侦探",
+"subjective":"adj. 主观的",
+"directory":"n. 名录",
+"plug":"vt. 堵塞；n. 插头",
+"groundwork":"n. 基础工作",
+"premier":"adj. 最著名的；n. 首相",
+"institute":"n. 机构；vt. 建立",
+"proportion":"n. 比例；体积",
+"fabric":"n. 织物",
+"fibre":"n. 纤维",
+"qualification":"n. 资格",
+"swing":"vi. & vt. 改变；n. 摆动",
+"label":"n. 标签；vt. 贴标签",
+"candidate":"n. 候选人",
+"gain the upper hand":"处于有利地位",
+"applicant":"n. 申请人",
+"prior":"adj. 在前的；优先的",
+"profile":"n. 概述；vt. 概述",
+"criterion":"n. 标准",
+"concisely":"adv. 简明地",
+"shave":"n. 刮脸；vi. & vt. 剃须",
+"refreshed":"adj. 恢复了精力的",
+"mode":"n. 方式",
+"delay":"n. 延迟；vi. & vt. 延迟",
+"duration":"n. 持续时间",
+"rude":"adj. 粗鲁的",
+"justify":"vt. 辩解；证明正确",
+"relevant":"adj. 相关的",
+"infer":"vt. 推断",
+"convey":"vt. 表达；传送",
+"firm":"adj. 坚定的；n. 公司",
+"genuine":"adj. 真诚的",
+"yawn":"vi. 打哈欠",
+"seize":"vt. 抓住",
+"corporate":"adj. 公司的",
+"rainbow":"n. 彩虹",
+"madam":"n. 女士",
+"temporary":"adj. 临时的",
+"bowling":" n. 保龄球运动 ",
+"tournament":"n. 锦标赛",
+
+
+
+            // 更多单词
+        };
+
+        var audioElement = new Audio();
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+   
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                
+                index++;
+            }
+
+            
+        }
+ </script>
+
+</body>
+</html>

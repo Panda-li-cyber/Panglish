@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆（X3U1）</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（X3U1）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+    "*blooming ":" adj. 盛开的,开花的 (2)",
+"unfold ":" vi. & vt.开花;展开,打开;展示，展现(2)",
+"*ethnically ":" adv. 种族地 (2)",
+"distinct":"adj.截然不同的,有区别的,不同种类的；清楚的，清晰的(2)",
+"territory ":" n. (加拿大)地区;领土,领地；领域(2)",
+"valley":" n. 山谷,溪谷(2)",
+"carve ":" vt.侵蚀,冲刷;雕,刻(2)",
+"*glacier ":" n. 冰川 (2)",
+"mighty ":"adj. 巨大的,非凡的;强而有力的(2)",
+"splendid ":" adj. 壮丽的,雄伟的;极佳的，非常好的 (2)",
+"apart from ":"除了…外(还),此外;除了…外(都)，要不是",
+"urban":" adj.城市的,城镇的(2)",
+"ancestor":" n.祖宗,祖先;原种(2)",
+"*indigenous ":" adj. 本地的,土生土长的",
+"strait":"n. 海峡,水道(2)",
+"minority ":" n.少数民族,少数群体；少数，少数人",
+"cuisine ":" n. 烹饪,风味;饭菜,菜肴(3)",
+"dynamic ":" adj.(事物)有活力的;动态的，发展变化的；充满活力的 (3)",
+"sample ":" vt.尝,品尝,体验;抽样检验 n.样本，样品；取样(3)",
+"off the beaten track ":"不落俗套,打破常规;远离闹市，偏远(3)",
+"*fiddle ":" n. 小提琴(3)",
+"*Celtic ":" adj. 凯尔特人的,凯尔特语的(3)",
+"come as no surprise ":"不足为奇,毫不奇怪(3)",
+"depth ":" n. 最深处;深(度);深刻;深厚(3)",
+"suburb ":" n. 郊区,城外 (5)",
+"botanical":"adj. 植物学的(5)",
+"*Clovis ":" adj. 克洛维斯的(5)",
+"blanket":" n. 厚层;毛毯(5)",
+"*hockey ":" n. 冰球运动,冰上曲棍球;曲棍球 (5)",
+"niece":" n.侄女,外甥女(5)",
+"welfare ":" n. 幸福,福祉;福利(6)",
+"accommodation ":" n. 住处(6)",
+"surrounding":" adj. 周围的,附近的(6)",
+"harmony":"n. 融洽,和睦;和谐 (6)",
+"sustain":" vt. 使保持,使稳定持续;维持",
+"manner ":" n.方式,方法;举止;(manners)礼貌",
+"consumption ":" n. 消耗,消耗量;消费(7)",
+"church ":" n. 教堂;礼拜 (7)",
+"come down to ":"可归结为,可归纳为 (7)",
+"*code":" n. 行为规范,道德准则;法规,法典；密码 (7)",
+"dress code ":"着装规定(7)",
+"item":" n. 一件商品(或物品);项目(7)",
+"elegant ":" adj. 漂亮雅致的,精美的;优美的，文雅的",
+"make one's way to ":"去,前往(9)",
+"statue ":" n. 雕像,雕塑 (9)",
+"*souvenir ":" n. 纪念物,纪念品(9)",
+"antique ":" n.文物,古董adj.古老的，古董的(9)",
+"vase ":" n. 花瓶,装饰瓶 (9)",
+"furniture ":" n. 家具 (9)",
+"*dune ":" n. 沙丘(11)",
+"goat ":" n..山羊(11)",
+"*fragile ":" adj. 脆弱的;易碎的 (11)",
+"resolution ":" n. 决心,决定;决议;解决(11)",
+"grain ":" n. 细粒,颗粒;谷物 (11)",
+"beat down":"(阳光)强烈照射,曝晒 (11)",
+"contrast":" vi. 形成对比vt.对比,对照 n.差异,差别;对照物(11)",
+"ray":" n. 光线,射线 (11)",
+"camel ":" n. 骆驼(11)",
+"chew ":" vi. & vt. 咀嚼,嚼碎;咬住 (11)",
+"starve ":" vi. & vt.(使) 饿死,(使) 挨饿(11)",
+"barbecue":" n. 烤架;户外烧烤 (11)",
+"departure ":" n. 离开,起程(12)",
+"mud ":" n. 泥,淤泥 (12)",
+"border ":" n. 国界,边界vi. & vt.(与…) 接壤 (12)",
+"parking ":" n. 停车;停车位 (12)",
+"*hut ":" n.(简陋的)小屋,棚屋 (12)",
+"brick ":" n.砖块;积木(12)",
+"*dot ":" vt.遍布;使布满,点缀;加点n. 点",
+"*flap ":" vi. & vt.拍打,摆动;振(翅) (12)",
+"ham ":" n. 火腿,火腿肉 (12)",
+"sausage ":" n. 香肠,腊肠(12)",
+"bunch":" n. 串,束;大量(12)",
+"fetch ":" vt.(去)拿来,(去)请来(12)",
+"possession ":" n. 私人物品,个人财产;具有，拥有(12)",
+"intently ":" adv. 热切地,专注地(12)",
+"hike ":" n. 远足,徒步旅行vi. & vt.去…远足,做徒步旅行(13)",
+"awesome ":" adj. 令人惊叹的,使人惊惧的；很好的 (13)",
+"liquid":" adj.液体的,液态的 n. 液体 (13)",
+"*Arctic ":" adj. 北极的n. (the Arctic)北极,北极地区(13)",
+"fox":" n. 狐狸;狡猾的人 (13)",
+"polar ":" adj. 极地的;完全相反的(13)",
+"delicacy ":" n. 佳肴;谨慎;敏感(13)",
+"lamb":" n.羊羔肉;羔羊 (13)",
+
+
+
+
+            // 更多单词
+        };
+
+        var audioElement = new Audio();
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+   
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                
+                index++;
+            }
+
+            
+        }
+ </script>
+
+</body>
+</html>

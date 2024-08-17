@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆（X3U2）</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（X3U2）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+  "astronaut":" n.宇航员,航天员(16)",
+"gravity ":" n. 重力;严重性;严肃 (16)",
+"absence ":" n. 缺乏,不存在;缺席(16)",
+"*float ":" vi. 飘动,漂流;浮vt. 使浮动，使漂流(16)",
+"cupboard ":" n.壁橱;橱柜,衣柜(16)",
+"ceiling":"n. 天花板;上限",
+"bother":"vt. 使烦恼,使担心;打扰; vi. 花费时间精力; n. 麻烦，困难",
+"occupy":"vt. 占用,使用;居住;占领,侵占；使忙于",
+"mission":"n. 任务;使命,天职;军事行动；太空飞行任务",
+"evaluate":"vt. 评估,估计,评价",
+"creature":"n. 动物,生物;人",
+"mosquito":"n. 蚊子",
+"microscope":"n. 显微镜",
+"cast new light on":"使进一步了解…",
+"maintenance":"n. 维护,保养;维持，保持",
+"circumstance":"n. 条件,状况;境况,经济状况",
+"in the circumstances":"在这种情况下,既然如此",
+"exposure":"n. 面临,遭受;揭露;报道",
+"radiation":"n. 辐射,放射线",
+"visible":"adj. 看得见的;明显的",
+"in view of":"鉴于,考虑到",
+"luxury":"n. 乐趣;奢侈品",
+"tube":"n. 管,管子;软管",
+"furthermore":"adv. 此外,再者",
+"pill":"n. 药丸,药片",
+"vital":"adj. 必不可少的;维持生命所必需的",
+"discipline":"vt. 严格要求;惩罚;训练; n. 训练，纪律；自制力",
+"leisure":"n. 闲暇,空闲",
+"crew":"n. 全体工作人员;全体乘务人员,全体船员；专业团队",
+"permanent":"adj. 永久的,永恒的",
+"altogether":"adv. 完全;总共;总之",
+"kit":"n. 成套设备,成套工具;配套元件",
+"telescope":"n. 望远镜",
+"universe":"n. 宇宙,天地万物",
+"crucial":"adj. 至关重要的,关键性的",
+"orbit":"vt. & vi. 围绕…运动,沿轨道运行; n. 轨道",
+"astronomer":"n. 天文学家",
+"merely":"adv. 仅仅,只不过",
+"administration":"n. 行政部门；管理，行政",
+"agency":"n. 机构;代理处",
+"comprise":"vt. 包括,包含;组成,构成",
+"scan":"vt. & vi. 扫描;细看;浏览; n. 扫描检查；快速查阅",
+"plain to see":"显而易见的",
+"foundation":"n. 基础,根据;地基;创办；基金会",
+"lay the foundation for":"为…打下基础",
+"purse":"n. 资金,财源;钱包",
+"tale":"n. 故事;讲述,叙述",
+"origin":"n. 起源,起因;出身",
+"shuttle":"n. 航天飞机;航班; vi. 频繁往来",
+"frequency":"n. 发生率,出现率;频繁；频率",
+"hydrogen":"n. 氢,氢气",
+"rocket":"n. 火箭;火箭武器",
+"motive":"n. 原因,动机,目的",
+"investment":"n. 投资;投入",
+"calculate":"vt. 计算,核算;预测",
+"coverage":"n. 新闻报道;覆盖范围;信息范围",
+"mechanic":"n. 机械师,技工",
+"assistant":"n. 助理;售货员;助教; adj. 助理的,副的",
+"incredibly":"adv. 极其,极端地;令人难以置信",
+"dust":"n. 沙土,尘土;灰尘,尘埃",
+"shelter":"n. 居所,住处;庇护; vt. 保护,掩蔽; vi. 躲避",
+"constant":"adj. 固定的,不变的;连续发生的; n. 连续的",
+"nuclear":"adj. 核能的,原子能的;核武器的",
+
+
+
+
+            // 更多单词
+        };
+
+        var audioElement = new Audio();
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+   
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                
+                index++;
+            }
+
+            
+        }
+ </script>
+
+</body>
+</html>

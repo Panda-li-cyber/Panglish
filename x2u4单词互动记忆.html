@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆（X2U4）</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（X2U4）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+     "castle":" n. 城堡(44)",
+"(build)castles in the air":" （建）空中楼阁，幻想，空想(44)",
+"input":" n. 输入的信息；投入vt. (input, input) 输入（信息）(44)",
+"capacity":" n. 领悟（或理解、办事）能力；容量，容积；职位，职责；生产量 (44)",
+"analyse":" vt. (AmE analyze) 分析 (44)",
+"massive":" adj. 巨大的，大而重的；非常严重的(44)",
+"network":" n. 网络，网状系统；关系网，人际网；（互联）网络(44)",
+"coin":" vt. 创造（新词语）(44)",
+"break through":" n. 重大进展，突破adj.突破性的(45)",
+"finance":" n. 财政，金融；资金；财力，财务管理vt.提供资金(45)",
+"to name but a few":" （表示列举）等等(45)",
+"autonomous":" adj. 自主的，有自主权的；自治的(45)",
+"domestic":" adj. 家庭的，家用的；本国的，国内的(45)",
+"threaten":" vt. 危及，对…构成威胁；威胁，恐吓(45)",
+"commit":" vt. 犯（罪）；承诺，保证；花（钱或时间）vi.全身心投入，忠于(45)",
+"crime":" n. 罪，罪行；犯罪活动(45)",
+"murder":" vt. & n. 谋杀，凶杀 (45)",
+"urge":" vt. 敦促，催促；大力推荐，竭力主张；驱赶，鞭策n.冲动，强烈的欲望(45)",
+"pose":" vt. 造成，产生；提问，质询vi.摆好姿势n.姿势(45)",
+"apparently":" adv. 显然，可见 (45)",
+"warning ":"n. 警告，先兆；警戒(45)",
+"demand":" vt. 需要；强烈要求n.要求，所需之物；需求，需要(45)",
+"victim":" n. 受害者，牺牲品；受骗者；祭品(45)",
+"fall victim to":" 受伤，受损，被害(45)",
+"greedy":" adj. 贪心的，贪婪的(45)",
+"recognition":" n. 识别，认出；承认，认可；赞誉，赏识(47)",
+"database":" n. 数据库(47)",
+"alternative":" n. 可供选择的事物adj.可供替代的；非传统的(47)",
+"*hacker":" n. 黑客(47)",
+"theft":" n. 偷窃，偷窃罪(47)",
+"break into":" 强行闯入，撬开；突然开始（笑、唱等）；顺利打入(47)",
+"fail-safe":" adj. 有自动保险装置的，具有自动防止故障性能的(47)",
+"*drone":" n. 无人驾驶飞机(48)",
+"distribution":" n. 分发，分送；分配，分布(48)",
+"predict":" vt. 预言，预告(48)",
+"decrease":" vt. & vi. 减少，降低 n. 减少，降低(48)",
+"deny":" vt. 否认，否定；拒绝承认，拒绝接受(48)",
+"quantity":" n. 数量；大量(49)",
+"in large quantities":" 大量，大批(49)",
+"airline":" n. 航空公司(49)",
+"threat":" n. 构成威胁的人（或事物）；威胁，恐吓；凶兆(49)",
+"spy":" vi. 从事间谍活动vt.突然看见n.间谍(49)",
+"spy on":" 暗中监视，窥探(49)",
+"illegal":" adj. 不合法的，非法的(49)",
+"monitor":" vt. 监视，跟踪调查；监听n.显示屏；监测器；班长(49)",
+"licence":" n. (AmE license) 许可证，执照(49)",
+"stadium":" n. 体育场，运动场 (49)",
+"highlight":" n. 最好（或最精彩）的部分vt.突出，强调；使醒目(51)",
+"capsule":" n. 小塑料容器；（装药的）胶囊；太空舱(51)",
+"bury":" vt. 埋藏；埋葬，安葬；覆盖；遮盖；使陷入(51)",
+"fountain":" n. 喷泉，涌流；喷水池；源泉，丰富来源(51)",
+"fountain pen":" 自来水笔(51)",
+"contemporary":" adj. 当代的，现代的；属同时期的，同一时代的n.同代人，同辈人(51)",
+"seed":" n. 种子；起源，起因(51)",
+"wheat":" n. 小麦，小麦粒(51)",
+"muscular":" adj. 肌肉的；强壮的 (51)",
+"conclude":" vt. & vi. 断定，推断出；达成，订立；（使）结束，终止(51)",
+"justified":" adj. 合乎情理的，事出有因的；有正当理由的(51)",
+"superiority":" n. 优越感；优越性，优势(51)",
+"virtual":" adj. 虚拟的，模拟的；很接近的，事实上的(53)",
+"at the forefront ":" of 处于最前列，进入重要地位(53)",
+"definition":" n. 定义；释义，解释 (53)",
+"headset":" n. 头戴式耳机(53)",
+"sensor":" n. 传感器，敏感元件 (53)",
+"practical":" adj. 实际的，真实的；切实可行的；有用的；实事求是的(53)",
+"a host of":" 许多，大量(53)",
+"academic":" adj. 教学的，学术的；学习良好的；纯理论的(53)",
+"*immersive":" adj.（计算机系统或图像）沉浸式虚拟现实的(53)",
+"engage":" vt. & vi. 吸引住（注意力、兴趣）；雇用，聘用；与…建立密切关系 (53)",
+"twin":" n. 双胞胎之一；一对相像的事物之一adj.双胞胎之一的；成对的，成双的 (53)",
+"clone":" n. 好像一模一样的人，复制品；克隆动物（或植物）vt.克隆，以无性繁殖技术复制 (54)",
+"barrier":" n. 障碍，阻力；屏障，障碍物；分界线，隔阂(54)",
+"boil down to":" 归结为，基本问题是(54)",
+"fine-tune":" vt. 对…微调(54)",
+"initial":" adj. 最初的，开始的n.首字母(54)",
+"optimistic":" adj. 乐观的，抱乐观看法的(54)",
+"annoy":" vt. 使恼怒，使生气；打扰，骚扰 (55)",
+"weed":" n. 杂草，野草(55)",
+"like weeds":" 大量(55)",
+"state-of-the-art":" adj. 使用最先进技术（或方法）的，最先进的 (55)",
+"globe":" n. 球体，球状物；地球仪；地球，世界(55)",
+"satellite":" n. 人造卫星；卫星(55)",
+"expense":" n. 费用；开销；开支(55)",
+"atthe expense of":" 在牺牲（或损害）…的情况下(55)",
+"gender":" n. 性别(55)",
+"envy":" n. & vt. 羡慕，忌妒(55)",
+"pub":" n. 酒吧，酒馆(55)",
+
+
+
+
+
+            // 更多单词
+        };
+
+        var audioElement = new Audio();
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+   
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                
+                index++;
+            }
+
+            
+        }
+ </script>
+
+</body>
+</html>

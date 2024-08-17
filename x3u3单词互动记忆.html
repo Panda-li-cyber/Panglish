@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆（X3U3）</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（X3U3）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+ "breadth":"n. 宽度;广泛 (29)",
+"convince":"vt. 使确信,使相信;说服，劝说 (29)",
+"*voyage":"n. 航海,航行,航天 vi. 航行,远行 (30)",
+"*fleet":"n. 舰队;捕鱼船队;车队 (30)",
+"*navigate":"vt. 航行;导航 vi. 导航 (30)",
+"on behalf":"of 代表(或代替);为帮助; 为了 (30)",
+"load":"vt. & vi.装上,装入 n.负载；承载量；大量 (30)",
+"*compass":"n. 罗盘,指南针;圆规(30)",
+"log":"n. 航海日志,正式记录;原木 vi. & vt. 伐木 (30)",
+"strengthen":"vt. & vi. 加强,增强(30)",
+"harmonious":"adj.友好和睦的; 协调的，和谐的 (30)",
+"dismiss":"vt. 不予考虑,对···不屑一提；去除，摒除；解雇；解散 (30)",
+"proof":"n. 证据,证明 (30)",
+"acknowledge":"vt. 承认(权威、地位)；承认(属实)；(公开)感谢 (30)",
+"influential":"adj.有很大影响力的, 有支配力的 (30)",
+"insist":"vi. & vt. 坚决要求,坚持; 坚持说 (31)",
+"route":"n. 路线,路途;途径,渠道 (31)",
+"financial":"adj. 财政的,金融的,财务的 (31)",
+"depart":"vi. & vt. 离开,起程 (31)",
+"shortage":"n. 不足,短缺 (31)",
+"leak":"vi.漏,渗漏;渗入 vt.漏,渗漏;泄露 n. 漏洞 (31)",
+"panic":"n. 惊恐,恐慌 vi. & vt.(panicked, panicked) (使)惊慌，(使)惊慌失措 (31)",
+"regardless":"adv. 不顾,不加理会(31)",
+"shore":"n.岸,滨 (31)",
+"subsequent":"adj. 随后的,后来的 (31)",
+"captain":"n. 船长;机长;上校;队长 (31)",
+"allow for":"使成为可能;考虑到,把…计算在内(31)",
+"kingdom":"n. 王国;管辖范围 (33)",
+"astonish":"vt. 使十分惊讶,使吃惊(33)",
+"royal":"adj. 盛大的,庄严的;皇家的,王室的 (33)",
+"*tomb":"n. 坟墓 (33)",
+"literary":"adj. 文学的,文学上的;爱好文学的 (34)",
+"extensively":"adv. 广阔地; 广泛地(34)",
+"facilitate":"vt. 使便利,促进 (34)",
+"sort out":"理顺,整理;把…安排好 (34)",
+"available":"adj. 可获得的,可找到的；有空的 (34)",
+"prison":"n. 监狱 (34)",
+"minister":"n. 大臣,部长 (35)",
+"exceptional":"adj.杰出的,优秀的; 异常的，罕见的 (35)",
+"phrase":"n. 成语,习语;短语,词组 (35)",
+"format":"n. 总体安排,设计;版式(35)",
+"shelf":"n. (pl. shelves /ʃelvz/)(书架等的)架子，搁板 (37)",
+"adopt":"vt. 采用,采取;表决采纳;领养，收养 vi.领养,收养 (37)",
+"comparison":"n. 对比;比较 (37)",
+"pack":"vt. & vi.塞进,挤进;装(箱),收拾; 打包；包装 n.包，包裹；小盒，小包 (37)",
+"contrary":"adj. 相反的,相对立的; 截然不同的 (37)",
+"*hell":"n. 地狱;苦难的经历,悲惨的境况(39)",
+"aboard":"prep.& adv. 在(车、船、飞机等)上，上(车、船、飞机等) (39)",
+"*rub":"vt.& vi.擦,磨,搓;(使) 相互摩擦(39)",
+"washroom":"n. 洗手间,厕所 (39)",
+"uniform":"n. 制服;队服 adj.一致的,统一的(39)",
+"violently":"adv.猛烈地,厉害地; 强烈地，激烈地；凶狠地 (39)",
+"eagle":"n. 雕 (39)",
+"dive":"vi. 俯冲;跳水;潜水 n. 冲，扑，俯冲；潜水；跳水 (39)",
+"thunder":"vi. 轰隆隆地响;打雷 n.雷,雷声 (39)",
+"freeze":"vi. & vt. (froze, frozen) 突然停止，呆住；结冰；冻僵 (39)",
+"*deck":"n. 甲板,舱面 (39)",
+"meanwhile":"adv. 同时;其间;对比之下 (39)",
+"drag":"vt.拖,拉;缓慢而费力地移动(39)",
+"chaos":"n. 混乱,杂乱 (39)",
+"navy":"n.海军,海军部队 (39)",
+"bleed":"vi. (bled, bled) 失血,流血 (40)",
+"hatch":"vt. 密谋,策划;使孵出 vi.孵化;孵出 (40)",
+"plot":"n. 阴谋;故事情节 vi. & vt. 密谋 (40)",
+"*infamy":"n. 臭名昭著,声名狼藉;恶行，罪恶 (40)",
+"sink":"vi. & vt.(sank, sunk)下沉,沉没; 坐下；降低 (40)",
+"memorial":"n. 纪念碑(或像等); 纪念物 (40)",
+"pray":"vi. & vt.企盼,祈求;祈祷,祷告 (40)",
+"episode":"n.一段经历,片段;一集(40)",
+"*textile":"n. 纺织品;(textiles)纺织业(41)",
+"reform":"vt. 改进,改良,改革 n. 改革,改良 (41)",
+"output":"n.产量,输出量 (41)",
+"cloth":"n. 织物,布料 (41)",
+"shift":"n. 改变,转移;轮班 vi. & vt.(使)移动,(使) 转移;改变 (41)",
+"cottage":"n.小屋,村舍 (41)",
+"cottage industry":"家庭手工业 (41)",
+
+
+
+
+
+            // 更多单词
+        };
+
+        var audioElement = new Audio();
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+   
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                
+                index++;
+            }
+
+            
+        }
+ </script>
+
+</body>
+</html>

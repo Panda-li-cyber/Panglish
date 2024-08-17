@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>英语单词互动记忆（X4U2）</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding-top: 60px; }
+        #header { position: fixed; top: 0; width: 100%; text-align: center; background: white; padding: 10px; z-index: 1000; }
+        #leftBox { position: fixed; top: 10px; left: 10px; }
+        #rightBox { position: fixed; top: 10px; right: 10px; display: flex; }
+        #rightBox > div { margin-left: 10px; }
+        table { width: 100%; table-layout: fixed; }
+        td { background-color: darkgreen; color: white; padding: 15px; text-align: center; cursor: pointer; }
+        #footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: lightgrey; }
+    </style>
+</head>
+<body>
+    <div id="header">英语单词互动记忆（X4U2）</div>
+    <div id="leftBox">
+        <input type="number" id="maxStudents" placeholder="最大学生数量">
+        <button onclick="generateRandom()">生成随机数</button>
+        <input type="text" id="randomNumber" placeholder="随机数" readonly>
+    </div>
+    <div id="rightBox">
+        <div>
+            组一积分: <span id="score1">0</span>
+            <button onclick="adjustScore(1, 'score1')">+</button>
+            <button onclick="adjustScore(-1, 'score1')">-</button>
+        </div>
+        <div>
+            组二积分: <span id="score2">0</span>
+            <button onclick="adjustScore(1, 'score2')">+</button>
+            <button onclick="adjustScore(-1, 'score2')">-</button>
+        </div>
+    </div>
+    <table id="wordTable"></table>
+    <div id="footer">
+       临武县第一中学李国保| 熊猫李English工作室
+    </div>
+
+    <script>
+        var words = {
+"react":"vi. 作出反应；有不良反应，过敏；起化学反应",
+"gentle":"adj. 温柔的；温和的；柔和的",
+"encode":"vt. 把···编码；把···译成电码（或密码）",
+"mail":"n. 电子邮件；邮政；邮件",
+"decode":"vt. 解（码），破译（尤指密码）",
+"feedback":"n. 反馈的意见（或信息）",
+"competent":"adj. 足以胜任的，有能力的，称职的",
+"obtain":"vt. 获得，赢得",
+"suit":"vt. 满足需要；相配，合身；n.套装，西装，西服",
+"negotiate":"vi. & vt. 谈判；商定，达成（协议）",
+"enterprise":"n. 公司，企业；规划，事业",
+"straightforward":"adj. 坦诚的；简单的",
+"fold":"vt. 折叠，对折；包，裹；n. 褶，褶层，折叠部分",
+"friction":"n. 争执；摩擦；摩擦力",
+"clarify":"vt. 使更清晰易懂，阐明",
+"knowledgeable":"adj. 博学的，有见识的",
+"empathy":"n. 同感，共鸣，同情",
+"put yourself in sb's shoes":"处于某人的境地，设身处地",
+"sympathy":"n. 同情；赞同",
+"account for":"sth 是…的说明（或原因）；（数量上、比例上）占",
+"empathize":"vi. 有同感，产生共鸣",
+"approve":"vi. & vt. 赞成；批准，通过（计划、要求等）",
+"approve of":"赞成，赞同",
+"tone":"n. 语气，腔调；风格，特色",
+"gain":"vt. & vi. 获得；增进，增长；（从…中）受益；n. 好处，利益",
+"gesture":"n. 手势，姿势；姿态，表示；vi. & vt. 做手势，用手势表示",
+"precisely":"adv. 准确地，恰好地；细心地；正是，确实",
+"vocabulary":"n. 词汇，词汇量",
+"preference":"n. 偏爱；偏爱的事物",
+"jam":"n. 果酱；拥挤，堵塞",
+"somewhat":"adv. 有点，有几分，稍微",
+"taboo":"n. 禁忌，忌讳；禁止，避讳",
+"embarrassed":"adj. 窘迫的，尴尬的；拮据的",
+"intention":"n. 意图，计划",
+"correspond":"vi. 类似于；相一致，符合；通信",
+"behave":"vi. & vt. 表现得体，有礼貌；表现",
+"tolerate":"vt. 容许，允许；忍受，容忍；能经受",
+"kindergarten":"n. 学前班；幼儿园",
+"recite":"vt. 吟诵；列举",
+"accent":"n. 口音，腔调；重音；着重点，强调",
+"handwriting":"n. 手写，书写；笔迹，书法",
+"fluent":"adj. (尤指外语) 流利的，熟练的",
+"cooperate":"vi. 合作，协作；协助，配合",
+"cite":"vt. 提及，列举；引用，引述",
+"broaden one's mind":"拓展视野，开阔眼界",
+"tofu":"n. 豆腐",
+"bacon":"n. 咸猪肉，熏猪肉",
+"tank":"n. 坦克；（贮放液体或气体的）罐",
+"golf":"n. 高尔夫球运动",
+"integrate":"vt. & vi. (使) 合并；(使)加入",
+"bilingual":"adj. 会说两种语言的；用两种语言（写）的",
+"kung fu":"n. 功夫",
+"oppose":"vt. 反对，抵制；与…对垒",
+"intervention":"n. 干涉行为，干预",
+"pure":"adj. 纯净的；完全的",
+"tribe":"n. 部落",
+"reject":"vt. 拒绝接受，不予考虑；不录用；排斥，排异",
+"pessimistic":"adj. 悲观的，悲观主义的",
+"Germanic":"adj. 日耳曼语的；德国的",
+"linguist；":"n. 语言学家通晓数国语言的人",
+"tendency":"n. 趋势，趋向；倾向，偏好",
+"skateboard":"n. 滑板",
+"canteen":"n. 食堂，餐厅",
+"sincerely":"adv. 真诚地，诚实地",
+"slip":"vi. 滑倒；滑落；溜；陷入；n. 差错；纸条；滑跤",
+"fence":"n. 栅栏，篱笆",
+"contest":"n. 比赛，竞赛；争夺，竞争；vt. 争取赢得；争辩，就…提出异议",
+
+
+
+            // 更多单词
+        };
+
+        var audioElement = new Audio();
+
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                index++;
+            }
+        }
+
+        function toggleWord(cell, english, chinese) {
+            if (cell.textContent === english) {
+                cell.textContent = chinese;
+                cell.style.backgroundColor = 'yellow';
+                cell.style.color = 'black';
+            } else {
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+            }
+        }
+
+        function playYoudaoAudio(text) {
+            var key = encodeURIComponent(text);
+            var engAudioURL = 'https://dict.youdao.com/dictvoice?audio=' + key + '&type=2';
+            audioElement.src = engAudioURL;
+            audioElement.play();
+        }
+        
+        function generateRandom() {
+            var max = document.getElementById('maxStudents').value;
+            var randomNumber = Math.floor(Math.random() * max) + 1;
+            document.getElementById('randomNumber').value = randomNumber;
+        }
+
+        function adjustScore(amount, scoreId) {
+            var score = parseInt(document.getElementById(scoreId).textContent);
+            document.getElementById(scoreId).textContent = score + amount;
+        }
+
+        window.onload = createTable;
+   
+        function createTable() {
+            var table = document.getElementById('wordTable');
+            var row, cell, english, chinese, index = 0;
+            for (english in words) {
+                chinese = words[english];
+                if (index % 3 === 0) {
+                    row = table.insertRow(-1);
+                }
+
+                cell = row.insertCell(-1);
+                cell.textContent = english;
+                cell.style.backgroundColor = 'darkgreen';
+                cell.style.color = 'white';
+                cell.onclick = (function(e, c) {
+                    return function() {
+                        toggleWord(this, e, c);
+                        playYoudaoAudio(e);
+                    };
+                })(english, chinese);
+                
+                index++;
+            }
+
+            
+        }
+ </script>
+
+</body>
+</html>
